@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>警惕Go编程陷阱</title>
+    <title>Git常用命令</title>
     <url>/2019/10/16/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<p>1、 查看远程所有分支</p>
 <pre><code>git branch -r</code></pre><p>2、查看所有分支</p>
 <pre><code>git branch -a</code></pre><p>3、拉取远程分支（如果不是origin，则需要换成对应的名称）</p>
 <pre><code>git remote update origin --prune</code></pre><p>4、创建分支</p>
-<pre><code>git checkout -b example</code></pre><p>5、切换分支</p>
+<pre><code>git checkout -b example</code></pre><a id="more"></a>
+
+<p>5、切换分支</p>
 <pre><code>git checkout example</code></pre><p>6、查看当前分支</p>
 <pre><code>git branch</code></pre><p>7、拉取当前分支代码</p>
 <pre><code>git pull origin example</code></pre><p>8、如果在远程服务器上有代码更新，直接丢弃所有更改的命令</p>
 <pre><code>git checkout ./</code></pre><p>9、解决pull时提示冲突</p>
 <pre><code>git reset --hard FETCH_HEAD</code></pre>]]></content>
-      <tags>
-        <tag>Go</tag>
-      </tags>
   </entry>
   <entry>
     <title>Go 1.13正式发布</title>
