@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支： Hexo分支 – 用来保存所有Hexo的源文件master分支 – 用来保存Hexo生成的博客文件 在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy指向m">
+<meta name="description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：  Hexo分支 – 用来保存所有Hexo的源文件 master分支 – 用来保存Hexo生成的博客文件  在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy">
 <meta property="og:type" content="article">
 <meta property="og:title" content="完美的Hexo多电脑同步方法">
 <meta property="og:url" content="http://yoursite.com/2018/10/18/完美的Hexo多电脑同步方法/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支： Hexo分支 – 用来保存所有Hexo的源文件master分支 – 用来保存Hexo生成的博客文件 在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy指向m">
+<meta property="og:description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：  Hexo分支 – 用来保存所有Hexo的源文件 master分支 – 用来保存Hexo生成的博客文件  在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-12-18T03:32:21.813Z">
+<meta property="og:updated_time" content="2019-12-18T07:40:40.253Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="完美的Hexo多电脑同步方法">
-<meta name="twitter:description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支： Hexo分支 – 用来保存所有Hexo的源文件master分支 – 用来保存Hexo生成的博客文件 在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy指向m">
+<meta name="twitter:description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：  Hexo分支 – 用来保存所有Hexo的源文件 master分支 – 用来保存Hexo生成的博客文件  在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy">
 
 
 
@@ -373,9 +373,12 @@
       
 
       
-        <p>我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。</p>
+        <div class="note warning"><p>我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。</p></div>
 <p>网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：</p>
-<p>Hexo分支 – 用来保存所有Hexo的源文件<br>master分支 – 用来保存Hexo生成的博客文件</p>
+<ul>
+<li>Hexo分支 – 用来保存所有Hexo的源文件</li>
+<li>master分支 – 用来保存Hexo生成的博客文件</li>
+</ul>
 <p>在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。<br>Hexo的deploy指向master分支部署pages，git的管理指向Hexo分支。</p>
 <p>但是这里有一个巨大的问题，就是多分支的方案一定是让完整的Hexo源文件暴露在公开的仓库了。这对一些Hexo博客采用的leancloud阅读次数管理、多说评论等服务的私有secret key也暴露在公开仓库分支了。如果对这些配置的_config.yml进行单独管理的话，又不能在另一台电脑直接git pull同步，非常的麻烦。</p>
 <a id="more"></a>
@@ -541,7 +544,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
