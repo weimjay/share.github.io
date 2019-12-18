@@ -79,17 +79,20 @@
 
 
 
-<meta name="description" content="$arr = array(‘1’,’2’,’3’); foreach($arr as $key=&amp;gt;&amp;amp;$value){} foreach($arr as $key=&amp;gt;$value){} var_dump($arr); 输出的结果居然是： array(  0 =&amp;gt; string ‘1’  1 =&amp;gt; string ‘2’  2 =&amp;gt; &amp;amp;string ‘2’)">
 <meta property="og:type" content="article">
-<meta property="og:title" content="foreach使用&amp;引用传递过程">
-<meta property="og:url" content="http://yoursite.com/2017/10/10/foreach使用&引用传递过程/index.html">
+<meta property="og:title" content="PHP排序算法">
+<meta property="og:url" content="http://yoursite.com/2017/10/10/PHP排序算法/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="$arr = array(‘1’,’2’,’3’); foreach($arr as $key=&amp;gt;&amp;amp;$value){} foreach($arr as $key=&amp;gt;$value){} var_dump($arr); 输出的结果居然是： array(  0 =&amp;gt; string ‘1’  1 =&amp;gt; string ‘2’  2 =&amp;gt; &amp;amp;string ‘2’)">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-11-21T07:58:03.000Z">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xn4v7psj30ek0aoaah.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xnp7jwug30my075gvc.gif">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xo54ka7g30mj070gt7.gif">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xojs1yrg30mj06wdt1.gif">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xowb3y2g30m80du1eo.gif">
+<meta property="og:updated_time" content="2019-12-18T08:06:58.885Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="foreach使用&amp;引用传递过程">
-<meta name="twitter:description" content="$arr = array(‘1’,’2’,’3’); foreach($arr as $key=&amp;gt;&amp;amp;$value){} foreach($arr as $key=&amp;gt;$value){} var_dump($arr); 输出的结果居然是： array(  0 =&amp;gt; string ‘1’  1 =&amp;gt; string ‘2’  2 =&amp;gt; &amp;amp;string ‘2’)">
+<meta name="twitter:title" content="PHP排序算法">
+<meta name="twitter:image" content="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xn4v7psj30ek0aoaah.jpg">
 
 
 
@@ -119,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/10/10/foreach使用&引用传递过程/">
+  <link rel="canonical" href="http://yoursite.com/2017/10/10/PHP排序算法/">
 
 
 
 
 
-  <title>foreach使用&引用传递过程 | Hexo</title>
+  <title>PHP排序算法 | Hexo</title>
   
 
 
@@ -284,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/10/foreach使用&引用传递过程/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/10/PHP排序算法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Mickey">
@@ -301,7 +304,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">foreach使用&引用传递过程</h1>
+          <h1 class="post-title" itemprop="name headline">PHP排序算法</h1>
         
 
         <div class="post-meta">
@@ -373,14 +376,21 @@
       
 
       
-        <p>$arr = array(‘1’,’2’,’3’);</p>
-<p>foreach($arr as $key=&gt;&amp;$value){}</p>
-<p>foreach($arr as $key=&gt;$value){}</p>
-<p>var_dump($arr);</p>
-<p>输出的结果居然是：</p>
-<p>array(<br>  0 =&gt; string ‘1’<br>  1 =&gt; string ‘2’<br>  2 =&gt; &amp;string ‘2’<br>)</p>
-<p>在foreach($arr as $key=&gt;&amp;$value) 数组遍历到最后，引用关系并没有断开，这时等同于 $value与 $arr 的最后一个单元即 $arr[2] 引用。 </p>
-<p>再到 foreach($arr as $k=&gt;$value)，$value的值一直随数组单元的值变，由于引用关系没有断开，$arr[2] 的值也跟着变化。一直到$arr遍历完，这时$value的值为2，所以$arr[2]值也为2。</p>
+        <p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xn4v7psj30ek0aoaah.jpg" alt></p>
+<a id="more"></a>
+
+<h2 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h2><p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xnp7jwug30my075gvc.gif" alt></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bubbleSort</span><span class="params">($arr)</span> </span>&#123;</span><br><span class="line">    $len = count($arr);</span><br><span class="line">    <span class="keyword">for</span> ($i = <span class="number">1</span>; $i &lt; $len; $i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> ($j = <span class="number">0</span>; $j &lt; $len - $i; $j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> ($arr[$j] &gt; $arr[$j + <span class="number">1</span>]) &#123;</span><br><span class="line">                $temp = $arr[$j + <span class="number">1</span>];</span><br><span class="line">                $arr[$j + <span class="number">1</span>] = $arr[$j];</span><br><span class="line">                $arr[$j] = $temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $arr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h2><p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xo54ka7g30mj070gt7.gif" alt></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fastSort</span><span class="params">($arr)</span> </span>&#123;</span><br><span class="line">    $len = count($arr);</span><br><span class="line">    <span class="keyword">if</span> ($len &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> $arr;</span><br><span class="line">    &#125;</span><br><span class="line">    $less = [];</span><br><span class="line">    $greater = [];</span><br><span class="line">    $fst = $arr[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> ($i = <span class="number">1</span>; $i &lt; $len; $i ++) &#123;</span><br><span class="line">        <span class="keyword">if</span> ($arr[$i] &lt; $fst) &#123;</span><br><span class="line">            $less[] = $arr[$i];</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            $greater[] = $arr[$i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> array_merge(fastSort($less), [$fst], fastSort($greater));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h2><p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xojs1yrg30mj06wdt1.gif" alt></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">selectSort</span><span class="params">($arr)</span> </span>&#123;</span><br><span class="line">    $len = count($arr);</span><br><span class="line">    <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; $len; $i++) &#123;</span><br><span class="line">        <span class="comment">//先假设最小值的位置</span></span><br><span class="line">        $p = $i;</span><br><span class="line">        <span class="keyword">for</span> ($j = $i + <span class="number">1</span>; $j &lt; $len; $j ++) &#123;</span><br><span class="line">            <span class="keyword">if</span> ($arr[$p] &gt; $arr[$j]) &#123;</span><br><span class="line">                <span class="comment">//比较发现更小的，记录下最小值的位置，并且在下次比较时采用已知的最小值进行比较</span></span><br><span class="line">                $p = $j;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//已经确定了当前的最小值的位置，保存到$p中</span></span><br><span class="line">        <span class="comment">//如果发现最小值的位置与当前假设的位置$i不同，则位置互换即可</span></span><br><span class="line">        <span class="keyword">if</span> ($p != $i) &#123;</span><br><span class="line">            $temp = $arr[$i];</span><br><span class="line">            $arr[$i] = $arr[$p];</span><br><span class="line">            $arr[$p] = $temp;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $arr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h2><p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xowb3y2g30m80du1eo.gif" alt></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">insertSort</span><span class="params">($arr)</span> </span>&#123;</span><br><span class="line">    $len = count($arr);</span><br><span class="line">    <span class="keyword">for</span> ($i = <span class="number">1</span>; $i &lt; $len; $i++) &#123;</span><br><span class="line">        $temp = $arr[$i];</span><br><span class="line">        <span class="keyword">for</span> ($j = $i - <span class="number">1</span>; $j &gt;= <span class="number">0</span>; $j --) &#123;</span><br><span class="line">            <span class="keyword">if</span> ($temp &lt; $arr[$j]) &#123;</span><br><span class="line">                $arr[$j + <span class="number">1</span>] = $arr[$j];</span><br><span class="line">                $arr[$j] = $temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $arr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -469,8 +479,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -530,6 +549,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#冒泡排序"><span class="nav-number">1.</span> <span class="nav-text">冒泡排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速排序"><span class="nav-number">2.</span> <span class="nav-text">快速排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选择排序"><span class="nav-number">3.</span> <span class="nav-text">选择排序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插入排序"><span class="nav-number">4.</span> <span class="nav-text">插入排序</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

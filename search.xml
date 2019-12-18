@@ -128,10 +128,10 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vi /etc/sysconfig/network-scripts/ifcfg-ens33</span><br></pre></td></tr></table></figure>
 
 <p>具体配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">TYPE=Ethernet</span><br><span class="line">PROXY_METHOD=none</span><br><span class="line">BROWSER_ONLY=no</span><br><span class="line">BOOTPROTO=static</span><br><span class="line">DEFROUTE=yes</span><br><span class="line">IPV4_FAILURE_FATAL=no</span><br><span class="line">IPV6INIT=yes</span><br><span class="line">IPV6_AUTOCONF=yes</span><br><span class="line">IPV6_DEFROUTE=yes</span><br><span class="line">IPV6_FAILURE_FATAL=no</span><br><span class="line">IPV6_ADDR_GEN_MODE=stable-privacy</span><br><span class="line">NAME=ens33</span><br><span class="line">UUID=a7dc20d2-10ed-42e9-943b-b72c9cb5c2b9</span><br><span class="line">DEVICE=ens33</span><br><span class="line">ONBOOT=yes</span><br><span class="line"></span><br><span class="line">IPADDR=192.168.3.180</span><br><span class="line">NETMASK=255.255.255.0</span><br><span class="line">GATEWAY=192.168.3.1</span><br></pre></td></tr></table></figure>
+
 <a id="more"></a>
 
-<p>TYPE=Ethernet<br>PROXY_METHOD=none<br>BROWSER_ONLY=no<br>BOOTPROTO=static<br>DEFROUTE=yes<br>IPV4_FAILURE_FATAL=no<br>IPV6INIT=yes<br>IPV6_AUTOCONF=yes<br>IPV6_DEFROUTE=yes<br>IPV6_FAILURE_FATAL=no<br>IPV6_ADDR_GEN_MODE=stable-privacy<br>NAME=ens33<br>UUID=a7dc20d2-10ed-42e9-943b-b72c9cb5c2b9<br>DEVICE=ens33<br>ONBOOT=yes</p>
-<p>IPADDR=192.168.3.180<br>NETMASK=255.255.255.0<br>GATEWAY=192.168.3.1</p>
 <p>2、安装vmware-tools<br>(1)安装GCC</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum -y install gcc</span><br></pre></td></tr></table></figure>
 
@@ -354,16 +354,23 @@ echo json_encode($ret);
       </categories>
   </entry>
   <entry>
-    <title>foreach使用&amp;引用传递过程</title>
-    <url>/2017/10/10/foreach%E4%BD%BF%E7%94%A8&amp;%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92%E8%BF%87%E7%A8%8B/</url>
-    <content><![CDATA[<p>$arr = array(‘1’,’2’,’3’);</p>
-<p>foreach($arr as $key=&gt;&amp;$value){}</p>
-<p>foreach($arr as $key=&gt;$value){}</p>
-<p>var_dump($arr);</p>
-<p>输出的结果居然是：</p>
-<p>array(<br>  0 =&gt; string ‘1’<br>  1 =&gt; string ‘2’<br>  2 =&gt; &amp;string ‘2’<br>)</p>
-<p>在foreach($arr as $key=&gt;&amp;$value) 数组遍历到最后，引用关系并没有断开，这时等同于 $value与 $arr 的最后一个单元即 $arr[2] 引用。 </p>
-<p>再到 foreach($arr as $k=&gt;$value)，$value的值一直随数组单元的值变，由于引用关系没有断开，$arr[2] 的值也跟着变化。一直到$arr遍历完，这时$value的值为2，所以$arr[2]值也为2。</p>
+    <title>PHP排序算法</title>
+    <url>/2017/10/10/PHP%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xn4v7psj30ek0aoaah.jpg" alt></p>
+<a id="more"></a>
+
+<h2 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h2><p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xnp7jwug30my075gvc.gif" alt></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">bubbleSort</span><span class="params">($arr)</span> </span>&#123;</span><br><span class="line">    $len = count($arr);</span><br><span class="line">    <span class="keyword">for</span> ($i = <span class="number">1</span>; $i &lt; $len; $i++) &#123;</span><br><span class="line">        <span class="keyword">for</span> ($j = <span class="number">0</span>; $j &lt; $len - $i; $j++) &#123;</span><br><span class="line">            <span class="keyword">if</span> ($arr[$j] &gt; $arr[$j + <span class="number">1</span>]) &#123;</span><br><span class="line">                $temp = $arr[$j + <span class="number">1</span>];</span><br><span class="line">                $arr[$j + <span class="number">1</span>] = $arr[$j];</span><br><span class="line">                $arr[$j] = $temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $arr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h2><p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xo54ka7g30mj070gt7.gif" alt></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fastSort</span><span class="params">($arr)</span> </span>&#123;</span><br><span class="line">    $len = count($arr);</span><br><span class="line">    <span class="keyword">if</span> ($len &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> $arr;</span><br><span class="line">    &#125;</span><br><span class="line">    $less = [];</span><br><span class="line">    $greater = [];</span><br><span class="line">    $fst = $arr[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">for</span> ($i = <span class="number">1</span>; $i &lt; $len; $i ++) &#123;</span><br><span class="line">        <span class="keyword">if</span> ($arr[$i] &lt; $fst) &#123;</span><br><span class="line">            $less[] = $arr[$i];</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            $greater[] = $arr[$i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> array_merge(fastSort($less), [$fst], fastSort($greater));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h2><p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xojs1yrg30mj06wdt1.gif" alt></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">selectSort</span><span class="params">($arr)</span> </span>&#123;</span><br><span class="line">    $len = count($arr);</span><br><span class="line">    <span class="keyword">for</span> ($i = <span class="number">0</span>; $i &lt; $len; $i++) &#123;</span><br><span class="line">        <span class="comment">//先假设最小值的位置</span></span><br><span class="line">        $p = $i;</span><br><span class="line">        <span class="keyword">for</span> ($j = $i + <span class="number">1</span>; $j &lt; $len; $j ++) &#123;</span><br><span class="line">            <span class="keyword">if</span> ($arr[$p] &gt; $arr[$j]) &#123;</span><br><span class="line">                <span class="comment">//比较发现更小的，记录下最小值的位置，并且在下次比较时采用已知的最小值进行比较</span></span><br><span class="line">                $p = $j;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//已经确定了当前的最小值的位置，保存到$p中</span></span><br><span class="line">        <span class="comment">//如果发现最小值的位置与当前假设的位置$i不同，则位置互换即可</span></span><br><span class="line">        <span class="keyword">if</span> ($p != $i) &#123;</span><br><span class="line">            $temp = $arr[$i];</span><br><span class="line">            $arr[$i] = $arr[$p];</span><br><span class="line">            $arr[$p] = $temp;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $arr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h2><p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga0xowb3y2g30m80du1eo.gif" alt></p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">insertSort</span><span class="params">($arr)</span> </span>&#123;</span><br><span class="line">    $len = count($arr);</span><br><span class="line">    <span class="keyword">for</span> ($i = <span class="number">1</span>; $i &lt; $len; $i++) &#123;</span><br><span class="line">        $temp = $arr[$i];</span><br><span class="line">        <span class="keyword">for</span> ($j = $i - <span class="number">1</span>; $j &gt;= <span class="number">0</span>; $j --) &#123;</span><br><span class="line">            <span class="keyword">if</span> ($temp &lt; $arr[$j]) &#123;</span><br><span class="line">                $arr[$j + <span class="number">1</span>] = $arr[$j];</span><br><span class="line">                $arr[$j] = $temp;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> $arr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>PHP</category>
