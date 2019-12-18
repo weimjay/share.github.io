@@ -1,0 +1,1109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>警惕Go编程陷阱</title>
+    <url>/2019/10/16/%E8%AD%A6%E6%83%95Go%E7%BC%96%E7%A8%8B%E9%99%B7%E9%98%B1/</url>
+    <content><![CDATA[<p><strong>1. Nil != Nil</strong></p>
+<p>我们先来讲我们第一个问题 Nil 不等于 Nil，这话听上去好像 1 不等于 1 一样， 骗小孩子的病句。其实在 Go 当中有的时候确实会发生这种问题，当我们认为我们的变量是 nil 的时候，甚至于我们很信誓旦旦说它是 nil 的时候，它其实并不是。</p>
+<a id="more"></a>
+
+<p>** 自定义错误类型**</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955898-109b140f-36a4-4716-bfd6-a69a452e8043.webp#align=left&display=inline&height=711&originHeight=711&originWidth=1080&search=&size=0&status=done&width=657" alt></p>
+<p>我们定义了自定义的错误类型，handle函数中判断了参数x的值是否等于1，如果不等于1就返回一个自定义的Error指针类型。否则就返回一个nil。在main函数中，我们分别用参数 0 和 1 调用了两次，然后判断了error是不是nil,不是nil 就打印一句话。好像就是一个很寻常的go函数。</p>
+<p>那么我们的问题来了，它的输出是什么？</p>
+<p>我们大家一起来稍微分析一下这个代码，先看第 24 行调用，这个很明显结果不是 nil， 所以我们第26行的打印应该是会成功的打印。我们再来看一下第28行的调用，我们用参数 1 来调用，1 等于 1 ,所以说它会return nil。应该不会去打印的。我觉得应该是这样，我觉得大家可能也觉得是这样。</p>
+<p>给大家 10 秒钟时间大家可以判断一下到底是不是这样。</p>
+<p>我们现在来看一下真正的表现是什么？</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955901-0dd4bc4d-e1ba-4cad-bfbf-61ede55f5060.webp#align=left&display=inline&height=604&originHeight=604&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们来看一下最终的输出。呃呃呃呃呃呃呃，好像和想的不太一样，什么鬼,一定是golang的bug。。我们看到第二个也已经打印了，并且我们注意一下这一部分，它打印的类型确实是 nil，但是 nil 为什么又不等于 nil 呢？<br>这是不是一个问题？明明是 nil，那这肯定是个 Bug，其实我也是这么想的，我还记得是凌晨两点钟左右，当时非常高兴，好像挖到一个大宝藏一样，我在github还提了一个issue<br><a href="https://github.com/golang/go/issues/16160" target="_blank" rel="noopener">https://github.com/golang/go/issues/16160</a></p>
+<p>我说你们这个有 Bug，赶紧修，然后我就被分分钟打脸。</p>
+<p><strong>接口准则</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955914-706ace1c-4d5d-41f5-be33-2c84e7ad8c5e.webp#align=left&display=inline&height=652&originHeight=652&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们来看一下别人怎么来打我的脸？</p>
+<p>第一点，其实Go在实现接口的时候，保存了两个东西，一个是这一个接口背后的类型 T，一个是这个类型背后的值 V，因此当我们在讨论接口这个东西的时候，实际上我们永远是在讨论类型以及类型的值。</p>
+<p>第二点，只有类型与值同时是 nil 的时候这个接口才会是 nil，这点就是我们问题的来源。</p>
+<p>第三点，我们都知道接口是隐式实现的，当我们用一个接口类型去接收一个 nil 结构体的时候，这个结果将不是 nil，因为此时的接口值是有类型（T）的， 只是它的值（V）是 nil，所以说我们刚才的 if 判断应该是成立的。</p>
+<p><strong>方案一</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955917-32db1ca1-bd87-46b7-a0a9-b2cf1a2ec289.webp#align=left&display=inline&height=716&originHeight=716&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们基于这个认识来看一下我们应该怎么来修这个问题，就很简单的。第一个修复的办法是，我们不再用 interface，我们直接用 struct，因为这个时候从头到尾都没有出现interface 的事情，自然不会出现与interface有关的问题。</p>
+<p><strong>方案二</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955906-1f2264b0-153f-413d-b734-427d840595f7.webp#align=left&display=inline&height=700&originHeight=700&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们还会有第二种方案，我们看一下，我不返回这一个 struct，我返回一个 error，这样再打印第 30 行的 err 就真的是 bug 了😂。</p>
+<p><strong>2. 危险的 HTTP 请求</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955933-393d6d29-5223-4fc2-a03a-6ffc59c934a2.webp#align=left&display=inline&height=704&originHeight=704&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们接下来看一下第二个问题 - 危险的 HTTP 请求。调用其他平台的HTTP API或者调用自己的内部服务是一件非常平常的事情，但是在Golang中，如果不仔细处理，则仍然容易造成一些泪流满面的事故发生。</p>
+<p><strong>简单的 Get 请求示例</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955927-78282e9b-ff88-4180-b8a6-bce69dd93361.webp#align=left&display=inline&height=538&originHeight=538&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们通常会写这样的代码来请求第三方解耦。发起一个GET请求，然后读取返回的数据，进行下一步处理。这几乎是一个教科书式的代码。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955971-d155e21c-3a78-4d6a-98e5-3120951f134b.webp#align=left&display=inline&height=689&originHeight=689&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>当你的系统没什么人用的时候，这段代码会工作的非常良好，但是一旦有大量的流量，则会造成一个很严重的问题。<br>既然我们拿出来讲，肯定不是这么简单的事情，我们先来看一下 当我们在讨论HTTP请求的时候到底在讨论什么。</p>
+<p><strong>http.Client 请求细节分析</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955963-2c7748ff-83b4-41a4-9542-1d0c7df583e9.webp#align=left&display=inline&height=727&originHeight=727&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们先来看一下在Go里面进行HTTP请求到底是怎么一回事。</p>
+<p>上面是非常简化之后的HTTP调用流程图，左边是我们的用户级代码，右边是HTTP包内部的流程。httpClient.Get() 只是httpClient.Do()的一个语法而已，在Do方法中会做一系列的检查与判断，然后就会进入到 roundtrip 的流程。roundtrip流程负责了基础数据交互的逻辑，roundtrip首先会调用getConn方法获取一个原始连接（可能是拿出已经创建好的，也可能是全新建立一个），之后将开启两个协程，一个用来读取数据，一个用来发送数据。在读取的协程里面，会等待一个信号，阻塞等待协程变量信号的到来，当这个信号到达之后，它会尝试把连接又还回到连接池，结束整个 HTTP 的生命周期。也就是说当我们这个信号一直没到的时候，我们这个协程其实一直是卡住的，它没有被释放，虽然讲我们可以很轻松放着这个东西不管了，因为读完之后你可以愉快干其他事情，但是它还孤零零卡在这里。</p>
+<p>这里面有个很重大的问题，这个信号什么时候到来？我们来看一下马赛克后面的内容，其实就是我们在调用这一个 Response.Body.Close 的时候，它就会发出WaitForBodyRead的信号，这也是我们在网上看到很多的文章都会提醒你做一个HTTP请求，不要忘记关闭 Body，这就是问题的本质，其实关闭 Body 这件事情没有做很多的事情，比较有意义的就是利用 Body这个信号需要去完成整个的生命周期。</p>
+<p><strong>HTTP 连接泄露解决方案</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955946-b781e4d6-387f-439e-9b5c-40f9fc3f1fe2.webp#align=left&display=inline&height=565&originHeight=565&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们修复方法就很简单，我们只需要把这个请求关闭，把这个连接还回去，这样处理之后，我们这个代码就是一个真正的教科书级的代码。</p>
+<p><strong>网络编程准则</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956037-71fe76ff-31d4-41a5-9b05-2f2d8a1c5b84.webp#align=left&display=inline&height=449&originHeight=449&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们用 Golang 做网络编程的时候，其实会有一个很有意思的地方，它跟其他语言是不太一样的，就是我们大部分的组件背后会依赖于连接池的技术，比如说我们常用的MQ/Redis/MySQL 等，背后往往都是用的连接池的技术。</p>
+<p>所以我们除了要学习基本的连接池相关的知识，比如说为什么需要连接池，以及连接池能够解决什么问题，我们还要去稍微深入地去学习一下，我们用的这些库的连接池设计我应该怎么样才能够正确管理好的我的TCP 连接，这是我们作为一个业务层是要掌握的一些网络方面的知识，我们一定要知道我们在用一个网络库的时候它背后的 TCP 的过程到底是怎么样，它会让我们提前去避免问题。因为这些问题往往是很难被提前发现的。</p>
+<p><strong>3. 可怕的协程</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955970-25d7e7b4-97eb-4ac1-83fa-e69c399a0a74.webp#align=left&display=inline&height=656&originHeight=656&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>接下来再来看下一个问题，可怕的协程，其实协程是在整个 Golang 里面，可以这么来讲，Golang 其实就是为了协程而生的，因为 Golang 里面的 Go，就是够浪。</p>
+<p><strong>简易的 BeeGo 计数器</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955960-82966e3e-3b3d-4910-b73b-4baf8bb607bf.webp#align=left&display=inline&height=548&originHeight=548&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们先来看一个有关协程小小的 demo，我们用Beego框架开发了一个很简单的 API，没做什么很有意义的事情，只是往map里面写入了一个数据，这个问题应该是很明显的，我们大家应该能够一目了然，很容易知道，因为之前的讲师也有提到过，Go 里面会有并发的读写问题，这里面就发生了并发的读写问题，我们也知道怎么去解决，只要给我们第 16行里面加一把锁这个问题就解决了，这个问题是一个很明显的问题，没有什么特别要提的。</p>
+<p><strong>跨协程资源共享</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955965-98c4d56b-abf6-43b5-bd5b-a14dc7a2817b.webp#align=left&display=inline&height=710&originHeight=710&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>比较有意思的是下面这个问题，我们同时开启了两个协程，在每个协程里面分别循环了 100 次，然后做了一个累加，利用Sleep来模拟了一些网络操作时间，现在我们的问题是最后累加出来的值是多少，这里我可以给大家一分钟时间讨论一下，和身边的小伙伴一起讨论一下。</p>
+<p>我们来看一下，它的值是多少呢？第一个是 100 吗？第二个是 200 吗？第三个是随机，只有天知道，我们不知道的。还有一个是以上答案都不对。现在我们来投票，A、B、C、D。</p>
+<p>这个例子里面我们做数据读写的时候很聪明的加了锁，所以不会有并发写的问题。这个例子主要的点是这个Sleep，这个 Sleep 的时间是经过精妙设计的，它会精妙设计出具体的一个结果。</p>
+<p>我觉得大家应该是猜不到的。最终我们算出的结果是 150，或者说它几乎是 150，因为我只测出 150，可能以上某种情况下面会有其他的一些值，但我测出来就是 150。至于说为什么是 150，我觉得是一个很有意思的问题，我不回答，我们在群里面在讨论。&lt;编注：这个例子暴露出来的就是对原子性的理解不足&gt;</p>
+<p><strong>跨协程资源共享 - 粗暴地修复 bug</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955999-6138f373-77e5-4090-951b-378ebbe03a5a.webp#align=left&display=inline&height=714&originHeight=714&originWidth=1080&search=&size=0&status=done&width=1080" alt><br>我们来看一下怎么来修这个 Bug，看代码好像没有怎么变动，只是把 lock 这一个函数移过来，提前了一点去进行Lock动作，我整个代码逻辑就只变动了 lock 这一行，我们可以去对比一下，我们把 23 行的 lock 和 32 行的 lock 往前面提了。</p>
+<p><strong>协程使用准则</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955973-b95d6a79-41b1-4ba6-93ac-df528af9a013.webp#align=left&display=inline&height=551&originHeight=551&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们可以很简单地使用协程，但是Go 的协程其实远远不是这么简单。它有上面种种这些问题，这些问题跟协程有没有关系？有关系，也没有关系，因为它都是属于并发编程的问题。</p>
+<p>这是我个人的感受。Golang提供了很方便的并发，但是它没有提供安全的并发，我们仍然需要非常小心地去处理这些资源竞争，以及要非常小心地知道我的资源什么时候开始去锁，什么时候开始解锁。</p>
+<p>所以我们现在团队内部有这么一个共识，我们会小心在代码里面避免这种情况发生，避免在多协程里面去共享同一个对象，去给它同时做读写的情况。因为他们通常是我们整个系统疑难 Bug 的源泉，所以我们对于这种情况的应用就是尽量避免，除非你很自信。</p>
+<p><strong>4. 无处不在的 JSON</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955989-580dc926-0cef-424b-b89c-a4482b0b0185.webp#align=left&display=inline&height=663&originHeight=663&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>下面我们来看下一个话题，JSON。现在来讲 ，JSON 已经成为了HTTP数据交互的事实上的标准，基本上每个人可能从工作第一天开始就会接触到它。JSON 的问题是什么呢？</p>
+<p><strong>使用 Struct 接收 JSON</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955995-17e52fee-b4ed-4883-b34f-fcc2f34b9d5e.webp#align=left&display=inline&height=633&originHeight=633&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们来看一下在 Golang 中怎么使用 JSON。</p>
+<p>这个代码描述了我们怎么去用 struct 去接受一个JSON，我们定义了一个 struct，模拟了一个返回，把它们可以反序列化。我们看一下它的打印，跟我们的预期应该是一样。</p>
+<p><strong>使用 Map 接收 JSON</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955995-20b8538b-079a-4550-8f05-2ba7751df93a.webp#align=left&display=inline&height=554&originHeight=554&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们再来看一下，当我们用 map 来接收的时候好像不太一样了，为什么所有这种数字的类型已经变成了一个 float64，而不是一个 int。</p>
+<p> 这个问题本身来讲没有很奇怪的，它其实就是一个规则而已，但是它引发了一个很有意思的思考，我们来想一下我们在Golang 当中用哪一个基础类型来处理 JSON 当中的数字类型是最靠谱的、最合适的？</p>
+<p>JSON 只有数字类型，没有 int ，long 这些东西，任何的正数、整数、负数都可以支持。那么我们在Go用什么来支持是最合适的呢？其实就是 Float64，我们抛开上下边界的问题，其实 Float64 是其他所有Golang 数字类型的一个并集。</p>
+<p><strong>类型映射规则</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956044-b20a9e7b-6cd2-4ab6-a224-1ea6a2361368.webp#align=left&display=inline&height=608&originHeight=608&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们这里可以看到在 JSON 中处理这种类型映射关系的时候，当你没有去指明一个类型的时候，它大概会以这样的方式去给你做一个假设。比如说Object，就会用一个map[string]interface{} 来作为接收。这个映射关系是非常有意思的，在我们现在的业务系统开发当中，公司与公司之间的合作，不同编程语言之间的协作变得越来越多，如何去做不同系统之间的映射，技术的映射、类型的映射，甚至一些功能逻辑上的映射，是我们整个系统集成工作里面是一件最最重要的事情。&lt;编注：这个问题的目的是抛出系统集成的话题，希望大家做系统集成工作的时候要非常在意兼容性&gt;</p>
+<p><strong>5. 骄傲的指针</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956054-c9bf8166-465f-40e6-be5d-bfc370b58e63.webp#align=left&display=inline&height=586&originHeight=586&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们再来看今天的最后一个问题，骄傲的指针。指针其实我觉得是挺可怕的，它会让人非常不爽，会有很多意外的发生。</p>
+<p><strong>循环变量指针</strong></p>
+<p>我们定义了一个函数printNumber,接收一个int类型的指针形参，在函数内部仅仅是打印了一下数字。我现在问题是最后输出的是什么？</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956042-2c8551b7-7671-45ae-830e-a304bb80a7b6.webp#align=left&display=inline&height=724&originHeight=724&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>我们来看，最后输出的全部是 3。如果大家写过 C 代码可能对这种情况比较熟悉。我们都知道在 Golang 里面是可以去打印一个指针具体内存地址。我们来看一下这些值内存的类型到底是怎么样？可以发现它打印出来的内存地址都一样，所以说它的值一样，是因为它的指针，其实它是同一个指针，它同一个对象，所以说同一个对象肯定只能有一个值。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956012-cf372dcc-e921-4ee4-b155-1cf400b1a72e.webp#align=left&display=inline&height=665&originHeight=665&originWidth=999&search=&size=0&status=done&width=999" alt></p>
+<p>上面这个例子和range版本是等价的。这种写法让人一目了然就知道，我们定义了一个 变量V，先把这个V 去分别赋值，然后再循环，得出的结论跟我们上面是一模一样的。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956051-3dfcdbca-0e8c-440a-a094-c11f072444ef.webp#align=left&display=inline&height=424&originHeight=424&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
+<p>为什么会一样呢？其实这只是一个设计而已。在 Golang 语言规范当中就指出了range 子句中的变量只会定义一次，就是我们刚才上面第 15 行，然后它会被重复使用，我们循环里面去给它们不停地赋值。第二点，当我们异步应用协程的方式去使用 range 变量这个指针的时候，其实它的结果是非预期的，不过这种情况一般是最后一次迭代的值。</p>
+<p>上面这些问题是我这几年所积累的一些有关 Golang 本身特性引发的一些让人崩溃的瞬间。</p>
+<p><strong>学 Go 到底在学什么</strong></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956050-cf2db7ef-9e0e-45ad-8c76-f95504103dc3.webp#align=left&display=inline&height=549&originHeight=549&originWidth=1080&search=&size=0&status=done&width=1080" alt><br>接下来提一下我们学习 Golang，到底在学习什么样的东西？</p>
+<p>第一， Golang 是一个最容易上手的编译型语言，它不像新型的Rust这样的语言有高级的特性，它没有。</p>
+<p>第二，它其实带有 GC 和 Runtime 的语言。</p>
+<p>第三，最重要的一点，它是语言级别支持协程。这是很重要的一个点，协程不是一个复杂的技术，很多年前就已经被提出来了。Golang 的伟大之处在于语言级别支持，官方的库都能支持协程的特性。因为语言支持协程，所以它是一个从基因当中用来适合做高性能后台开发的编程语言。很多人都说 Golang 是一个系统编程语言，很多人以为这个系统是操作系统，其实不是，这个系统指的是Web后台系统，因为里面所有的类似的包就会发现几乎大量的跟网络和数据交互有关的一些库，所以它从头到尾没有说自己是用来开发操作系统的。</p>
+]]></content>
+      <tags>
+        <tag>Go</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Go 1.13正式发布</title>
+    <url>/2019/09/05/Go%201.13%E6%AD%A3%E5%BC%8F%E5%8F%91%E5%B8%83/</url>
+    <content><![CDATA[<p>今天 Go 1.13 终于发布了，虽然比预期延迟了半个月之久，但毕竟迟到总比不到好。</p>
+<p>Go 1.13 的发布为 Go 带来了不少变化（详见：<a href="https://golang.org/doc/go1.13" target="_blank" rel="noopener">https://golang.org/doc/go1.13</a> ），有些变化可能是开发者无法直接感觉到的，但有些又是和开发者日常开发息息相关的。其中，Go modules 的扶正就是这次 Go 1.13 发布中开发者能直接感觉到的最大变化。</p>
+<a id="more"></a>
+
+<p>Go modules 最早发布于 Go 1.11，经过两个版本的更新后，它作为依赖管理解决方案来说现在已经变得光彩夺目。随着 Go modules 一起被发布的还有一个叫做 Module proxy protocol 的协议，通过它我们可以搭建 Go 模块代理，最后交由 GOPROXY 环境变量以指引 go 命令后续在抓取模块时的途径。对于咱们中国的开发者来说，一个优秀的 Go 模块代理可以帮助我们解决很多问题。比如 Go 语言中最知名的 <code>golang.org/x/...</code> 模块在中国大陆是无法访问到的，以前我们会用很多其他的办法来抓取他们，而若依靠一个可以访问到它们的模块代理，那么将事半功倍。更因为 Go 1.13 将 GOPROXY 默认成了中国大陆无法访问的 <code>https://proxy.golang.org</code> ，所以我们中国的开发者从今以后必须先修改 GOPROXY 才能正常使用 go 来开发应用了。为此，我们联合中国备受信赖的云服务提供商七牛云专门为咱们中国开发者而打造了一个 Go 模块代理：goproxy.cn。</p>
+<p>goproxy.cn 是目前中国最可靠的 Go 模块代理，对于这点，如果有人存在质疑可以一一测试比对列表中所有能在国内访问的代理。至于那个和 goproxy.cn域名比较相近的 goproxy.io，我之前已经发表过一篇实测文章（详见：<a href="https://studygolang.com/topics/9994" target="_blank" rel="noopener">https://studygolang.com/topics/9994</a> ）。</p>
+<p>goproxy.cn 是一个非营利性项目，目标是为中国和世界上其他地方的 Gopher 们提供一个免费的、可靠的、持续在线的且经过 CDN 加速的模块代理。正因为 goproxy.cn 由中国 Go 语言领域第一个吃螃蟹的大公司七牛云运行，所以它的稳定性和运行速度都是毋庸置疑的，如果你的网络环境本身不差的情况下，它能快到让你不可思议，比 <code>go get</code> 传统的抓取方式快上了不止几倍。有人可能会问阿里云的那个 mirrors.aliyun.com/goproxy 也很快，而且阿里云也是大厂，为什么不用阿里云的模块代理。我只能说，当我在使用阿里云的代理做初始化 github.com/kubernetes/kubernetes 的测试时，出现了大量的 404 错误以至于初始化操作无法完成……而且它还不支持代理 <code>GOSUMDB</code> 的默认值也就是 sum.golang.org，因此你还得手动修改 GOSUMDB 才能够正常使用 go。在速度旗鼓相当的情况下，为什么不考虑直接使用一个更稳定、高可用的呢？而且毕竟 goproxy.cn 这个域名也很好记不是嘛～你只用记住 goproxy 和 .cn，就没了。<br>Q&amp;A<br>问：在 Go 1.13 中如何使用 goproxy.cn？<br>答：<code>go env -w GOPROXY=https://goproxy.cn,direct</code> </p>
+<p>问：在 Go 1.13 之前如何使用 goproxy.cn？<br>答：同样也是设置环境变量即可，但是得你手动配置，而且还不能使用上述的那个 <code>,direct</code> 后缀，因为那是 Go 1.13 刚加的特性。详细配置方法可以参见 <a href="https://goproxy.cn" target="_blank" rel="noopener">https://goproxy.cn</a> 的 README 文件。</p>
+]]></content>
+      <categories>
+        <category>Go</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Centos7搭建Go开发环境</title>
+    <url>/2019/01/10/Centos7%E6%90%AD%E5%BB%BAGo%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/</url>
+    <content><![CDATA[<p>1、设置静态IP虚拟机网络设置选择桥接</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vi /etc/sysconfig/network-scripts/ifcfg-ens33</span><br></pre></td></tr></table></figure>
+
+<p>TYPE=Ethernet<br>PROXY_METHOD=none<br>BROWSER_ONLY=no<br>BOOTPROTO=static<br>DEFROUTE=yes<br>IPV4_FAILURE_FATAL=no<br>IPV6INIT=yes<br>IPV6_AUTOCONF=yes<br>IPV6_DEFROUTE=yes<br>IPV6_FAILURE_FATAL=no<br>IPV6_ADDR_GEN_MODE=stable-privacy<br>NAME=ens33<br>UUID=a7dc20d2-10ed-42e9-943b-b72c9cb5c2b9<br>DEVICE=ens33<br>ONBOOT=yes</p>
+<p>IPADDR=192.168.3.180<br>NETMASK=255.255.255.0<br>GATEWAY=192.168.3.1</p>
+<a id="more"></a>
+
+<p>2、安装vmware-tools<br>(1)安装GCC</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum -y install gcc</span><br></pre></td></tr></table></figure>
+
+<p>(2)解决The path “” is not a valid path to the 3.10.0-693.el7.x86_64 kernel headers.出现该问题是找不到内核头文件，需要安装头文件，正确的安装命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum install &quot;kernel-devel-uname-r == $(uname -r)&quot;</span><br></pre></td></tr></table></figure>
+
+<p>3、安装Go环境</p>
+<ul>
+<li><p>下载安装包</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum -y install wget vim</span><br><span class="line"></span><br><span class="line">wget https://dl.google.com/go/go1.11.4.linux-amd64.tar.gz</span><br><span class="line">tar -C /usr/local -xzf go1.11.4.linux-amd64.tar.gz</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加环境变量</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">vim /etc/profile</span><br><span class="line">//在最后一行添加</span><br><span class="line">export GOROOT=/usr/local/go</span><br><span class="line">export PATH=$PATH:$GOROOT/bin</span><br><span class="line">exprot GOPATH=/mnt/hgfs/E/AMP/www/gostudy</span><br><span class="line">//:wq保存退出后source一下</span><br><span class="line">source /etc/profile</span><br><span class="line"></span><br><span class="line">//执行go version，如果显示版本号，表示Go环境安装成功。</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装Git</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">yum -y install git</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装调试工具</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">go get -u github.com/go-delve/delve/cmd/dlv</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>Go</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>完美的Hexo多电脑同步方法</title>
+    <url>/2018/10/18/%E5%AE%8C%E7%BE%8E%E7%9A%84Hexo%E5%A4%9A%E7%94%B5%E8%84%91%E5%90%8C%E6%AD%A5%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<p>我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。</p>
+<p>网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：</p>
+<p>Hexo分支 – 用来保存所有Hexo的源文件<br>master分支 – 用来保存Hexo生成的博客文件</p>
+<p>在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。<br>Hexo的deploy指向master分支部署pages，git的管理指向Hexo分支。</p>
+<p>但是这里有一个巨大的问题，就是多分支的方案一定是让完整的Hexo源文件暴露在公开的仓库了。这对一些Hexo博客采用的leancloud阅读次数管理、多说评论等服务的私有secret key也暴露在公开仓库分支了。如果对这些配置的_config.yml进行单独管理的话，又不能在另一台电脑直接git pull同步，非常的麻烦。</p>
+<a id="more"></a>
+
+<p>所以Hexo最完美的多电脑同步方法是，创建两个仓库：</p>
+<p>Hexo私有仓库 – 用来保存所有Hexo的源文件<br>master公开仓库 – 用来保存Hexo生成的博客文件<br>下面来具体讲讲实现方法。</p>
+<h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>这里假设读者已经搭建好了Hexo的博客系统，实现了：</p>
+<ol>
+<li>使用hexo d -g部署博客</li>
+<li>实现了发布hexo到github pages</li>
+<li>自定义了next等第三方主题</li>
+</ol>
+<h1 id="Let’s-go"><a href="#Let’s-go" class="headerlink" title="Let’s go!"></a>Let’s go!</h1><h2 id="创建私有仓库"><a href="#创建私有仓库" class="headerlink" title="创建私有仓库"></a>创建私有仓库</h2><p>注册一个Coding账号，然后创建一个私有项目，名称为hexo</p>
+<h2 id="建立本地git仓库"><a href="#建立本地git仓库" class="headerlink" title="建立本地git仓库"></a>建立本地git仓库</h2><p>进入你现有的Hexo文件夹，删除第三方主题的git配置，如对next主题</p>
+<pre>rm -fr ./themes/next/.git/</pre>
+
+<p>然后建立本地的git仓库</p>
+<pre>git init</pre>
+
+<p>创建一个.gitignore文件，并放在Hexo的根目录，内容为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">.DS_Store</span><br><span class="line">Thumbs.db</span><br><span class="line">db.json</span><br><span class="line">*.log</span><br><span class="line">node_modules/</span><br><span class="line">public/</span><br><span class="line">.deploy*/</span><br></pre></td></tr></table></figure>
+
+<h2 id="push到私有仓库"><a href="#push到私有仓库" class="headerlink" title="push到私有仓库"></a>push到私有仓库</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git remote add origin https://git.coding.net/&lt;yourname&gt;/hexo.git</span><br><span class="line">git add .</span><br><span class="line">git commit -m &quot;my first private hexo&quot;</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+
+<p>这样，就完成了本地Hexo源码的全备份</p>
+<p>#在另一台电脑进行Hexo写作<br>上面已经完成了Hexo的全备份，那么如果在另一台电脑进行Hexo编辑呢。<br>当然首先你也要完成node/npm/hexo/git等环境的搭建和配置。</p>
+<h2 id="Hexo拉取"><a href="#Hexo拉取" class="headerlink" title="Hexo拉取"></a>Hexo拉取</h2><pre>git clone https://git.coding.net/<yourname>/hexo.git</yourname></pre>
+<p>这样你就拥有了你的所有Hexo源文件</p>
+<h2 id="Hexo文章编写和发布"><a href="#Hexo文章编写和发布" class="headerlink" title="Hexo文章编写和发布"></a>Hexo文章编写和发布</h2><p>尽管拉取下来了，还需要建立一下Hexo的环境，这里需要格外注意的一点是：<br>千万不要用hexo init命令。原因是当前目录已经建立了git仓库环境, <code>hexo init</code>会覆盖到当前的git环境，重建一个新的，这样和我们的私有Hexo源码仓库脱离了联系。</p>
+<p>正确的做法是：</p>
+<pre>npm install</pre>
+<p>因为<code>package.jso</code>里面已经保存了hexo的必备资源包信息，<code>npm install</code>后Hexo环境就建立起来了。</p>
+<p>接下来就进行正常的编写和发布就好。<br>本地预览的命令还是：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<p>Hexo的发布命令是<code>hexo d</code>。</p>
+<p>最后执行<code>git status</code>把更改的新文件<code>git add</code>和<code>git commit</code>，最后<code>git push</code>到私有仓库，又会完成Hexo源码仓库的同步。</p>
+<h2 id="Hexo仓库更新"><a href="#Hexo仓库更新" class="headerlink" title="Hexo仓库更新"></a>Hexo仓库更新</h2><p>下次进行Hexo仓库拉取时执行：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git fetch --all #将git上所有文件拉取到本地</span><br><span class="line">git reset --hard origin/master  #强制将本地内容指向刚刚同步git云端内容</span><br></pre></td></tr></table></figure>
+
+<p>至此，我们就实现了在多台电脑自由发布文章。</p>
+]]></content>
+      <categories>
+        <category>Hexo</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Nginx下使Thinkphp URL模式支持PATHINFO和REWRITE</title>
+    <url>/2018/07/17/Nginx%E4%B8%8B%E4%BD%BFThinkphp-URL%E6%A8%A1%E5%BC%8F%E6%94%AF%E6%8C%81PATHINFO%E5%92%8CREWRITE/</url>
+    <content><![CDATA[<p>首先tp5的访问目录指向到webroot/public文件夹中。<br>thinkphp的url访问：<code>http://serverName/index.php</code>（或者其它应用入口文件）/模块/控制器/操作/[参数名/参数值…]，这个需要支持pathinfo，Apache默认支持，而Nginx不支持。<br>1.php.ini中的配置参数cgi.fix_pathinfo = 1<br>2.修改nginx.conf文件。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">location ~ \.php(.*)$ &#123;</span><br><span class="line">    fastcgi_pass   127.0.0.1:9000;</span><br><span class="line">    fastcgi_index  index.php;</span><br><span class="line">#下面两句是给fastcgi权限，可以支持 ?s=/module/controller/action 的url访问模式</span><br><span class="line">    fastcgi_split_path_info  ^((?U).+\.php)(/?.+)$;</span><br><span class="line">    fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;</span><br><span class="line">#下面两句才能真正支持 index.php/index/index/index 的pathinfo模式</span><br><span class="line">    fastcgi_param  PATH_INFO  $fastcgi_path_info;</span><br><span class="line">    fastcgi_param  PATH_TRANSLATED  $document_root$fastcgi_path_info;</span><br><span class="line">    include        fastcgi_params;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>复制代码<br>这样就能在linux,nginx环境下运行tp5了。<br>3.去掉/index.php/<br>修改nginx.conf文件</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">       index  index.html index.htm index.php;</span><br><span class="line">            #autoindex  on;</span><br><span class="line">          if (!-e $request_filename) &#123;</span><br><span class="line">            rewrite  ^(.*)$  /index.php?s=/$1  last;</span><br><span class="line">            break;</span><br><span class="line">          &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Nginx</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>ajax跨域问题解决</title>
+    <url>/2017/12/18/ajax%E8%B7%A8%E5%9F%9F%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</url>
+    <content><![CDATA[<p>ajax跨域访问是一个老问题了，解决方法很多，比较常用的是JSONP方法，JSONP方法是一种非官方方法，而且这种方法只支持GET方式，不如POST方式安全。</p>
+<p>即使使用jQuery的jsonp方法，type设为POST，也会自动变为GET。</p>
+<p>官方问题说明：</p>
+<div class="note "><p>“script”: Evaluates the response as JavaScript and returns it as plain text. Disables caching by appending a query string parameter, “_=[TIMESTAMP]”, to the URL unless the cache option is set to true.Note: This will turn POSTs into GETs for remote-domain requests.</p></div>
+
+<p>如果跨域使用POST方式，可以使用创建一个隐藏的iframe来实现，与ajax上传图片原理一样，但这样会比较麻烦。</p>
+<a id="more"></a>
+
+<p>因此，通过设置Access-Control-Allow-Origin来实现跨域访问比较简单。</p>
+<p>例如：客户端的域名是<code>www.client.com</code>，而请求的域名是<code>www.server.com</code><br>如果直接使用ajax访问，会有以下错误</p>
+<div class="note danger"><p>XMLHttpRequest cannot load <a href="http://www.server.com/server.php" target="_blank" rel="noopener">http://www.server.com/server.php</a>. No ‘Access-Control-Allow-Origin’ header is present on the requested resource.Origin ‘<a href="http://www.client.com&#39;" target="_blank" rel="noopener">http://www.client.com&#39;</a> is therefore not allowed access.</p></div>
+
+<p>在被请求的Response header中加入</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// 指定允许其他域名访问  </span><br><span class="line">header(&apos;Access-Control-Allow-Origin:*&apos;);  </span><br><span class="line">// 响应类型  </span><br><span class="line">header(&apos;Access-Control-Allow-Methods:POST&apos;);  </span><br><span class="line">// 响应头设置  </span><br><span class="line">header(&apos;Access-Control-Allow-Headers:x-requested-with,content-type&apos;);  </span><br><span class="line">就可以实现ajax POST跨域访问了。</span><br></pre></td></tr></table></figure>
+
+<p>代码如下：<br>client.html 路径：<code>http://www.client.com/client.html</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0 Transitional//EN&quot;&gt;  </span><br><span class="line">&lt;html&gt;  </span><br><span class="line"> &lt;head&gt;  </span><br><span class="line">  &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html;charset=utf-8&quot;&gt;  </span><br><span class="line">  &lt;title&gt; 跨域测试 &lt;/title&gt;  </span><br><span class="line">  &lt;script src=&quot;//code.jquery.com/jquery-1.11.3.min.js&quot;&gt;&lt;/script&gt;  </span><br><span class="line"> &lt;/head&gt;  </span><br><span class="line">  </span><br><span class="line"> &lt;body&gt;  </span><br><span class="line">    &lt;div id=&quot;show&quot;&gt;&lt;/div&gt;  </span><br><span class="line">    &lt;script type=&quot;text/javascript&quot;&gt;  </span><br><span class="line">    $.post(&quot;http://www.server.com/server.php&quot;,&#123;name:&quot;fdipzone&quot;,gender:&quot;male&quot;&#125;)  </span><br><span class="line">      .done(function(data)&#123;  </span><br><span class="line">        document.getElementById(&quot;show&quot;).innerHTML = data.name + &apos; &apos; + data.gender;  </span><br><span class="line">      &#125;);  </span><br><span class="line">    &lt;/script&gt;  </span><br><span class="line"> &lt;/body&gt;  </span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>server.php 路径：<code>http://www.server.com/server.php</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php  </span><br><span class="line">$ret = array(  </span><br><span class="line">    &apos;name&apos; =&gt; isset($_POST[&apos;name&apos;])? $_POST[&apos;name&apos;] : &apos;&apos;,  </span><br><span class="line">    &apos;gender&apos; =&gt; isset($_POST[&apos;gender&apos;])? $_POST[&apos;gender&apos;] : &apos;&apos;  </span><br><span class="line">);  </span><br><span class="line">  </span><br><span class="line">header(&apos;content-type:application:json;charset=utf8&apos;);  </span><br><span class="line">header(&apos;Access-Control-Allow-Origin:*&apos;);  </span><br><span class="line">header(&apos;Access-Control-Allow-Methods:POST&apos;);  </span><br><span class="line">header(&apos;Access-Control-Allow-Headers:x-requested-with,content-type&apos;);  </span><br><span class="line">  </span><br><span class="line">echo json_encode($ret);</span><br></pre></td></tr></table></figure>
+
+<p>Access-Control-Allow-Origin: * 表示允许任何域名跨域访问<br>如果需要指定某域名才允许跨域访问，只需把Access-Control-Allow-Origin: * 改为Access-Control-Allow-Origin: 允许的域名<br>例如：<code>header(&#39;Access-Control-Allow-Origin: http://www.client.com&#39;);</code></p>
+<p>如果需要设置多个域名允许访问，这里需要用php处理一下<br>例如允许 <code>www.client.com</code> 与 <code>www.client2.com</code> 可以跨域访问<br>server.php 修改为</p>
+<pre><code>&lt;?php  
+$ret = array(  
+    &apos;name&apos; =&gt; isset($_POST[&apos;name&apos;])? $_POST[&apos;name&apos;] : &apos;&apos;,  
+    &apos;gender&apos; =&gt; isset($_POST[&apos;gender&apos;])? $_POST[&apos;gender&apos;] : &apos;&apos;  
+);  
+
+header(&apos;content-type:application:json;charset=utf8&apos;);  
+
+$origin = isset($_SERVER[&apos;HTTP_ORIGIN&apos;])? $_SERVER[&apos;HTTP_ORIGIN&apos;] : &apos;&apos;;  
+
+$allow_origin = array(  
+    &apos;http://www.client.com&apos;,  
+    &apos;http://www.client2.com&apos;  
+);  
+
+if(in_array($origin, $allow_origin)){  
+    header(&apos;Access-Control-Allow-Origin:&apos;.$origin);  
+    header(&apos;Access-Control-Allow-Methods:POST&apos;);  
+    header(&apos;Access-Control-Allow-Headers:x-requested-with,content-type&apos;);  
+}  
+
+echo json_encode($ret);  
+</code></pre>]]></content>
+      <categories>
+        <category>JavaScript</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>避免PHP-FPM内存泄漏导致内存耗尽</title>
+    <url>/2017/11/25/%E9%81%BF%E5%85%8DPHP-FPM%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E5%AF%BC%E8%87%B4%E5%86%85%E5%AD%98%E8%80%97%E5%B0%BD/</url>
+    <content><![CDATA[<p>php-FPM如果出现存存泄漏问题可能导致服务器内存不足从而导致服务器资源用尽了，这样就会导致网站无法访问了，下面一起来看一篇避免PHP-FPM内存泄漏导致内存耗尽的配置。</p>
+<p>对于PHP-FPM多进程的模式，想要避免内存泄漏问题很简单,就是要让PHP-CGI在处理一定数量进程后退出即可。</p>
+<p>否则PHP程序或第三方模块(如Imagemagick扩展)导致的内存泄漏问题会导致内存耗尽或不足。</p>
+<a id="more"></a>
+
+<p>php-fpm.conf中有相关配置：</p>
+<p>#请自行按需求配置</p>
+<p>pm.max_requests = 1024</p>
+<p>实际上还有另一个跟它有关联的值max_children，这个是每次php-fpm会建立多少个进程，这样实际上的内存消耗是max_children * max_requests * 每个请求使用内存。</p>
+<p>另外一些粗暴的方法包括建立cron kill掉占用内存过多的php-cgi，</p>
+<p>1.检查php进程的内存占用，杀掉内存使用超额的进程</p>
+<p>一般情况下，如果php-cgi进程占用超过1%的内存，就得考虑一下是否要杀掉它了。因为普通情况下，php-cgi进程一般占用0.2%或以下。</p>
+<p>这里提供一个脚本供各位使用，就是放在cron任务里，每分钟执行一次。</p>
+<p>使用crontab -e 命令，然后添加如下调度任务</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">* * * * * /bin/bash /usr/local/script/kill_php_cgi.sh</span><br></pre></td></tr></table></figure>
+
+<p>kill_php_cgi.sh脚本如下</p>
+<p>#!/bin/sh</p>
+<p>#如果是要杀掉php-fpm的进程，下面的语句中php-cgi请改成php-fpm</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">pids=`ps -ef|grep php-cgi|grep -v &quot;grep&quot;|grep -v &quot;$0&quot;| awk &apos;&#123;print $2&#125;&apos;` </span><br><span class="line">if [ &quot;$pids&quot; != &quot;&quot; ];then for  pid  in   $pids; </span><br><span class="line">do kill -9 $pid done fi</span><br></pre></td></tr></table></figure>
+
+<p>2.增加内存，将PHP_FCGI_MAX_REQUESTS的值设置成跟你内存总存储量相对应的值。</p>
+<p>3.优化程序,降低处理每次请求占用的内存大小。</p>
+<p>如果PHP-FPM能够提供配置子进程内存超过指定大小就被kill，那就省事多了。</p>
+]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>解决php5.6的curl扩展开启失败的问题</title>
+    <url>/2017/10/25/%E8%A7%A3%E5%86%B3php5-6%E7%9A%84curl%E6%89%A9%E5%B1%95%E5%BC%80%E5%90%AF%E5%A4%B1%E8%B4%A5%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<p>今天要用到php的curl扩展，将php.ini中的;extension=php_curl.dll的注释去掉后，重启apache后仍然报Call to undefined function curl_init()的错误。<br>搜索多次，尝试很多方法，也不能成功的将curl成功开启。<br>最后在官方说明文档中的 <a href="http://php.net/manual/zh/curl.installation.php" target="_blank" rel="noopener">http://php.net/manual/zh/curl.installation.php</a> 这个页面得到了提示，<br><strong>只要将php安装目录下的libssh2.dll复制到apache的bin目录</strong>，并重新启动apache，于是curl成功开启。此事让我意识到了文档的重要性，大伙也得注意多在文档中寻找答案。</p>
+<p>测试环境：</p>
+<p>httpd-2.4.23-x64-vc11<br>mysql-5.6.26-winx64<br>php-5.6.23-Win32-VC11-x64</p>
+]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>cookie和session的区别详解</title>
+    <url>/2017/10/18/cookie%E5%92%8Csession%E7%9A%84%E5%8C%BA%E5%88%AB%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<p>二者的定义：</p>
+<p>当你在浏览网站的时候，WEB 服务器会先送一小小资料放在你的计算机上，Cookie 会帮你在网站上所打的文字或是一些选择，都纪录下来。当下次你再光临同一个网站，WEB 服务器会先看看有没有它上次留下的 Cookie 资料，有的话，就会依据 Cookie里的内容来判断使用者，送出特定的网页内容给你。 Cookie 的使用很普遍，许多有提供个人化服务的网站，都是利用 Cookie来辨认使用者，以方便送出使用者量身定做的内容，像是 Web 接口的免费 email 网站，都要用到 Cookie。</p>
+<p>具体来说cookie机制采用的是在客户端保持状态的方案，而session机制采用的是在服务器端保持状态的方案。</p>
+<p>同时我们也看到，由于采用服务器端保持状态的方案在客户端也需要保存一个标识，所以session机制可能需要借助于cookie机制来达到保存标识的目的，但实际上它还有其他选择。</p>
+<a id="more"></a>
+
+<p>cookie机制。正统的cookie分发是通过扩展HTTP协议来实现的，服务器通过在HTTP的响应头中加上一行特殊的指示以提示浏览器按照指示生成相应的cookie。然而纯粹的客户端脚本如JavaScript或者VBScript也可以生成cookie。而cookie的使用是由浏览器按照一定的原则在后台自动发送给服务器的。浏览器检查所有存储的cookie，如果某个cookie所声明的作用范围大于等于将要请求的资源所在的位置，则把该cookie附在请求资源的HTTP请求头上发送给服务器。</p>
+<p>cookie的内容主要包括：名字，值，过期时间，路径和域。路径与域一起构成cookie的作用范围。若不设置过期时间，则表示这个cookie的生命期为浏览器会话期间，关闭浏览器窗口，cookie就消失。这种生命期为浏览器会话期的cookie被称为会话cookie。</p>
+<p>会话cookie一般不存储在硬盘上而是保存在内存里，当然这种行为并不是规范规定的。若设置了过期时间，浏览器就会把cookie保存到硬盘上，关闭后再次打开浏览器，这些cookie仍然有效直到超过设定的过期时间。存储在硬盘上的cookie可以在不同的浏览器进程间共享，比如两个IE窗口。而对于保存在内存里的cookie，不同的浏览器有不同的处理方式</p>
+<p>session机制。session机制是一种服务器端的机制，服务器使用一种类似于散列表的结构（也可能就是使用散列表）来保存信息。当程序需要为某个客户端的请求创建一个session时，服务器首先检查这个客户端的请求里是否已包含了一个session标识（称为session id），如果已包含则说明以前已经为此客户端创建过session，服务器就按照session id把这个session检索出来使用（检索不到，会新建一个），如果客户端请求不包含session id，则为此客户端创建一个session并且生成一个与此session相关联的session id，session id的值应该是一个既不会重复，又不容易被找到规律以仿造的字符串，这个session id将被在本次响应中返回给客户端保存。保存这个session id的方式可以采用cookie，这样在交互过程中浏览器可以自动的按照规则把这个标识发送给服务器。一般这个cookie的名字都是类似于SEEESIONID。但cookie可以被人为的禁止，则必须有其他机制以便在cookie被禁止时仍然能够把session id传递回服务器。</p>
+<p>经常被使用的一种技术叫做URL重写，就是把session id直接附加在URL路径的后面。还有一种技术叫做表单隐藏字段。就是服务器会自动修改表单，添加一个隐藏字段，以便在表单提交时能够把session id传递回服务器。比如： </p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;form name=&quot;testform&quot; action=&quot;/xxx&quot;&gt; </span><br><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;jsessionid&quot; value=&quot;ByOK3vjFD75aPnrF7C2HmdnV6QZcEbzWoWiBYEnLerjQ99zWpBng!-145788764&quot;&gt; </span><br><span class="line">&lt;input type=&quot;text&quot;&gt; </span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure>
+
+<p>实际上这种技术可以简单的用对action应用URL重写来代替。</p>
+<p>cookie 和session 的区别：</p>
+<p>1、cookie数据存放在客户的浏览器上，session数据放在服务器上。</p>
+<p>2、cookie不是很安全，别人可以分析存放在本地的COOKIE并进行COOKIE欺骗考虑到安全应当使用session。</p>
+<p>3、session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能考虑到减轻服务器性能方面，应当使用COOKIE。</p>
+<p>4、单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。</p>
+<p>5、所以个人建议：<br>将登陆信息等重要信息存放在SESSION<br>其他信息如果需要保留，可以放在COOKIE中</p>
+]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>foreach使用&amp;引用传递过程</title>
+    <url>/2017/10/10/foreach%E4%BD%BF%E7%94%A8&amp;%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92%E8%BF%87%E7%A8%8B/</url>
+    <content><![CDATA[<p>$arr = array(‘1’,’2’,’3’);</p>
+<p>foreach($arr as $key=&gt;&amp;$value){}</p>
+<p>foreach($arr as $key=&gt;$value){}</p>
+<p>var_dump($arr);</p>
+<p>输出的结果居然是：</p>
+<p>array(<br>  0 =&gt; string ‘1’<br>  1 =&gt; string ‘2’<br>  2 =&gt; &amp;string ‘2’<br>)</p>
+<p>在foreach($arr as $key=&gt;&amp;$value) 数组遍历到最后，引用关系并没有断开，这时等同于 $value与 $arr 的最后一个单元即 $arr[2] 引用。 </p>
+<p>再到 foreach($arr as $k=&gt;$value)，$value的值一直随数组单元的值变，由于引用关系没有断开，$arr[2] 的值也跟着变化。一直到$arr遍历完，这时$value的值为2，所以$arr[2]值也为2。</p>
+]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>php-redis中文文档</title>
+    <url>/2017/09/30/php-redis%E4%B8%AD%E6%96%87%E6%96%87%E6%A1%A3/</url>
+    <content><![CDATA[<p>phpredis是php的一个扩展，效率非常高，有链表排序功能，对创建内存级的模块业务关系很有用。</p>
+<p>以下是redis官方提供的命令使用技巧:</p>
+<p>下载地址如下：</p>
+<p><a href="https://github.com/owlient/phpredis（支持redis" target="_blank" rel="noopener">https://github.com/owlient/phpredis（支持redis</a> 2.0.4）</p>
+<p>Redis::__construct构造函数<br>$redis = new Redis();</p>
+<a id="more"></a>
+
+<p>connect, open 链接redis服务<br>参数<br>host: string，服务地址<br>port: int,端口号<br>timeout: float,链接时长 (可选, 默认为 0 ，不限链接时间)<br>注: 在redis.conf中也有时间，默认为300</p>
+<p>pconnect, popen 不会主动关闭的链接</p>
+<p>setOption 设置redis模式</p>
+<p>getOption 查看redis设置的模式</p>
+<p>ping 查看连接状态</p>
+<p>get 得到某个key的值（string值）<br>如果该key不存在，return false</p>
+<p>set 写入key 和 value（string值）<br>如果写入成功，return ture</p>
+<p>setex 带生存时间的写入值<br>$redis-&gt;setex(‘key’, 3600, ‘value’); // sets key → value, with 1h TTL.</p>
+<p>setnx 判断是否重复的，写入值<br>$redis-&gt;setnx(‘key’, ‘value’);<br>$redis-&gt;setnx(‘key’, ‘value’);</p>
+<p>delete  删除指定key的值<br>返回已经删除key的个数（长整数）<br>$redis-&gt;delete(‘key1’, ‘key2’);<br>$redis-&gt;delete(array(‘key3’, ‘key4’, ‘key5’));</p>
+<p>ttl<br>得到一个key的生存时间</p>
+<p>persist<br>移除生存时间到期的key<br>如果key到期 true 如果不到期 false</p>
+<p>mset （redis版本1.1以上才可以用）<br>同时给多个key赋值<br>$redis-&gt;mset(array(‘key0’ =&gt; ‘value0’, ‘key1’ =&gt; ‘value1’));</p>
+<p>multi, exec, discard<br>进入或者退出事务模式<br>参数可选Redis::MULTI或Redis::PIPELINE. 默认是 Redis::MULTI<br>Redis::MULTI：将多个操作当成一个事务执行<br>Redis::PIPELINE:让（多条）执行命令简单的，更加快速的发送给服务器，但是没有任何原子性的保证<br>discard:删除一个事务<br>返回值<br>multi()，返回一个redis对象，并进入multi-mode模式，一旦进入multi-mode模式，以后调用的所有方法都会返回相同的对象，只到exec(）方法被调用。</p>
+<p>watch, unwatch （代码测试后，不能达到所说的效果）<br>监测一个key的值是否被其它的程序更改。如果这个key在watch 和 exec （方法）间被修改，这个 MULTI/EXEC 事务的执行将失败（return false）<br>unwatch  取消被这个程序监测的所有key<br>参数，一对key的列表<br>$redis-&gt;watch(‘x’);</p>
+<p>$ret = $redis-&gt;multi() -&gt;incr(‘x’) -&gt;exec();</p>
+<p>subscribe *<br>方法回调。注意，该方法可能在未来里发生改变</p>
+<p>publish *<br>发表内容到某一个通道。注意，该方法可能在未来里发生改变</p>
+<p>exists<br>判断key是否存在。存在 true 不在 false</p>
+<p>incr, incrBy<br>key中的值进行自增1，如果填写了第二个参数，者自增第二个参数所填的值<br>$redis-&gt;incr(‘key1’);<br>$redis-&gt;incrBy(‘key1’, 10);</p>
+<p>decr, decrBy<br>做减法，使用方法同incr</p>
+<p>getMultiple<br>传参<br>由key组成的数组<br>返回参数<br>如果key存在返回value，不存在返回false<br>$redis-&gt;set(‘key1’, ‘value1’); $redis-&gt;set(‘key2’, ‘value2’); $redis-&gt;set(‘key3’, ‘value3’); $redis-&gt;getMultiple(array(‘key1’, ‘key2’, ‘key3’));<br>$redis-&gt;lRem(‘key1’, ‘A’, 2);<br>$redis-&gt;lRange(‘key1’, 0, -1);</p>
+<p>list相关操作<br>lPush<br>$redis-&gt;lPush(key, value);<br>在名称为key的list左边（头）添加一个值为value的 元素</p>
+<p>rPush<br>$redis-&gt;rPush(key, value);<br>在名称为key的list右边（尾）添加一个值为value的 元素</p>
+<p>lPushx/rPushx<br>$redis-&gt;lPushx(key, value);<br>在名称为key的list左边(头)/右边（尾）添加一个值为value的元素,如果value已经存在，则不添加</p>
+<p>lPop/rPop<br>$redis-&gt;lPop(‘key’);<br>输出名称为key的list左(头)起/右（尾）起的第一个元素，删除该元素</p>
+<p>blPop/brPop<br>$redis-&gt;blPop(‘key1’, ‘key2’, 10);<br>lpop命令的block版本。即当timeout为0时，若遇到名称为key i的list不存在或该list为空，则命令结束。如果timeout&gt;0，则遇到上述情况时，等待timeout秒，如果问题没有解决，则对keyi+1开始的list执行pop操作</p>
+<p>lSize<br>$redis-&gt;lSize(‘key’);<br>返回名称为key的list有多少个元素</p>
+<p>lIndex, lGet<br>$redis-&gt;lGet(‘key’, 0);<br>返回名称为key的list中index位置的元素</p>
+<p>lSet<br>$redis-&gt;lSet(‘key’, 0, ‘X’);<br>给名称为key的list中index位置的元素赋值为value</p>
+<p>lRange, lGetRange<br>$redis-&gt;lRange(‘key1’, 0, -1);<br>返回名称为key的list中start至end之间的元素（end为 -1 ，返回所有）</p>
+<p>lTrim, listTrim<br>$redis-&gt;lTrim(‘key’, start, end);<br>截取名称为key的list，保留start至end之间的元素</p>
+<p>lRem, lRemove<br>$redis-&gt;lRem(‘key’, ‘A’, 2);<br>删除count个名称为key的list中值为value的元素。count为0，删除所有值为value的元素，count&gt;0从头至尾删除count个值为value的元素，count&lt;0从尾到头删除|count|个值为value的元素</p>
+<p>lInsert<br>在名称为为key的list中，找到值为pivot 的value，并根据参数Redis::BEFORE | Redis::AFTER，来确定，newvalue 是放在 pivot 的前面，或者后面。如果key不存在，不会插入，如果 pivot不存在，return -1<br>$redis-&gt;delete(‘key1’); $redis-&gt;lInsert(‘key1’, Redis::AFTER, ‘A’, ‘X’); $redis-&gt;lPush(‘key1’, ‘A’); $redis-&gt;lPush(‘key1’, ‘B’); $redis-&gt;lPush(‘key1’, ‘C’); $redis-&gt;lInsert(‘key1’, Redis::BEFORE, ‘C’, ‘X’);<br>$redis-&gt;lRange(‘key1’, 0, -1);<br>$redis-&gt;lInsert(‘key1’, Redis::AFTER, ‘C’, ‘Y’);<br>$redis-&gt;lRange(‘key1’, 0, -1);<br>$redis-&gt;lInsert(‘key1’, Redis::AFTER, ‘W’, ‘value’);</p>
+<p>rpoplpush<br>返回并删除名称为srckey的list的尾元素，并将该元素添加到名称为dstkey的list的头部<br>$redis-&gt;delete(‘x’, ‘y’);<br>$redis-&gt;lPush(‘x’, ‘abc’); $redis-&gt;lPush(‘x’, ‘def’); $redis-&gt;lPush(‘y’, ‘123’); $redis-&gt;lPush(‘y’, ‘456’); // move the last of x to the front of y. var_dump($redis-&gt;rpoplpush(‘x’, ‘y’));<br>var_dump($redis-&gt;lRange(‘x’, 0, -1));<br>var_dump($redis-&gt;lRange(‘y’, 0, -1)); </p>
+<p>string(3) “abc”<br>array(1) { [0]=&gt; string(3) “def” }<br>array(3) { [0]=&gt; string(3) “abc” [1]=&gt; string(3) “456” [2]=&gt; string(3) “123” }</p>
+<p>SET操作相关<br>sAdd<br>向名称为key的set中添加元素value,如果value存在，不写入，return false<br>$redis-&gt;sAdd(key , value);</p>
+<p>sRem, sRemove<br>删除名称为key的set中的元素value<br>$redis-&gt;sAdd(‘key1’ , ‘set1’);<br>$redis-&gt;sAdd(‘key1’ , ‘set2’);<br>$redis-&gt;sAdd(‘key1’ , ‘set3’);<br>$redis-&gt;sRem(‘key1’, ‘set2’);</p>
+<p>sMove<br>将value元素从名称为srckey的集合移到名称为dstkey的集合<br>$redis-&gt;sMove(seckey, dstkey, value);</p>
+<p>sIsMember, sContains<br>名称为key的集合中查找是否有value元素，有ture 没有 false<br>$redis-&gt;sIsMember(key, value);</p>
+<p>sCard, sSize<br>返回名称为key的set的元素个数</p>
+<p>sPop<br>随机返回并删除名称为key的set中一个元素</p>
+<p>sRandMember<br>随机返回名称为key的set中一个元素，不删除</p>
+<p>sInter<br>求交集</p>
+<p>sInterStore<br>求交集并将交集保存到output的集合<br>$redis-&gt;sInterStore(‘output’, ‘key1’, ‘key2’, ‘key3’)</p>
+<p>sUnion<br>求并集<br>$redis-&gt;sUnion(‘s0’, ‘s1’, ‘s2’);<br>s0,s1,s2 同时求并集</p>
+<p>sUnionStore<br>求并集并将并集保存到output的集合<br>$redis-&gt;sUnionStore(‘output’, ‘key1’, ‘key2’, ‘key3’)；</p>
+<p>sDiff<br>求差集</p>
+<p>sDiffStore<br>求差集并将差集保存到output的集合</p>
+<p>sMembers, sGetMembers<br>返回名称为key的set的所有元素</p>
+<p>sort<br>排序，分页等<br>参数<br>‘by’ =&gt; ‘some_pattern_<em>‘,<br>‘limit’ =&gt; array(0, 1),<br>‘get’ =&gt; ‘some_other_pattern_</em>‘ or an array of patterns,<br>‘sort’ =&gt; ‘asc’ or ‘desc’,<br>‘alpha’ =&gt; TRUE,<br>‘store’ =&gt; ‘external-key’<br>例子<br>$redis-&gt;delete(‘s’); $redis-&gt;sadd(‘s’, 5); $redis-&gt;sadd(‘s’, 4); $redis-&gt;sadd(‘s’, 2); $redis-&gt;sadd(‘s’, 1); $redis-&gt;sadd(‘s’, 3);<br>var_dump($redis-&gt;sort(‘s’)); // 1,2,3,4,5<br>var_dump($redis-&gt;sort(‘s’, array(‘sort’ =&gt; ‘desc’))); // 5,4,3,2,1<br>var_dump($redis-&gt;sort(‘s’, array(‘sort’ =&gt; ‘desc’, ‘store’ =&gt; ‘out’))); // (int)5</p>
+<p>string命令<br>getSet<br>返回原来key中的值，并将value写入key<br>$redis-&gt;set(‘x’, ‘42’);<br>$exValue = $redis-&gt;getSet(‘x’, ‘lol’); // return ‘42’, replaces x by ‘lol’<br>$newValue = $redis-&gt;get(‘x’)’ // return ‘lol’</p>
+<p>append<br>string，名称为key的string的值在后面加上value<br>$redis-&gt;set(‘key’, ‘value1’);<br>$redis-&gt;append(‘key’, ‘value2’);<br>$redis-&gt;get(‘key’);</p>
+<p>getRange （方法不存在）<br>返回名称为key的string中start至end之间的字符<br>$redis-&gt;set(‘key’, ‘string value’);<br>$redis-&gt;getRange(‘key’, 0, 5);<br>$redis-&gt;getRange(‘key’, -5, -1);</p>
+<p>setRange （方法不存在）<br>改变key的string中start至end之间的字符为value<br>$redis-&gt;set(‘key’, ‘Hello world’);<br>$redis-&gt;setRange(‘key’, 6, “redis”);<br>$redis-&gt;get(‘key’);</p>
+<p>strlen<br>得到key的string的长度<br>$redis-&gt;strlen(‘key’);</p>
+<p>getBit/setBit<br>返回2进制信息</p>
+<p>zset（sorted set）操作相关<br>zAdd(key, score, member)：向名称为key的zset中添加元素member，score用于排序。如果该元素已经存在，则根据score更新该元素的顺序。<br>$redis-&gt;zAdd(‘key’, 1, ‘val1’);<br>$redis-&gt;zAdd(‘key’, 0, ‘val0’);<br>$redis-&gt;zAdd(‘key’, 5, ‘val5’);<br>$redis-&gt;zRange(‘key’, 0, -1); // array(val0, val1, val5)</p>
+<p>zRange(key, start, end,withscores)：返回名称为key的zset（元素已按score从小到大排序）中的index从start到end的所有元素<br>$redis-&gt;zAdd(‘key1’, 0, ‘val0’);<br>$redis-&gt;zAdd(‘key1’, 2, ‘val2’);<br>$redis-&gt;zAdd(‘key1’, 10, ‘val10’);<br>$redis-&gt;zRange(‘key1’, 0, -1); // with scores $redis-&gt;zRange(‘key1’, 0, -1, true);</p>
+<p>zDelete, zRem<br>zRem(key, member) ：删除名称为key的zset中的元素member<br>$redis-&gt;zAdd(‘key’, 0, ‘val0’);<br>$redis-&gt;zAdd(‘key’, 2, ‘val2’);<br>$redis-&gt;zAdd(‘key’, 10, ‘val10’);<br>$redis-&gt;zDelete(‘key’, ‘val2’);<br>$redis-&gt;zRange(‘key’, 0, -1); </p>
+<p>zRevRange(key, start, end,withscores)：返回名称为key的zset（元素已按score从大到小排序）中的index从start到end的所有元素.withscores: 是否输出socre的值，默认false，不输出<br>$redis-&gt;zAdd(‘key’, 0, ‘val0’);<br>$redis-&gt;zAdd(‘key’, 2, ‘val2’);<br>$redis-&gt;zAdd(‘key’, 10, ‘val10’);<br>$redis-&gt;zRevRange(‘key’, 0, -1); // with scores $redis-&gt;zRevRange(‘key’, 0, -1, true);</p>
+<p>zRangeByScore, zRevRangeByScore<br>$redis-&gt;zRangeByScore(key, star, end, array(withscores， limit ));<br>返回名称为key的zset中score &gt;= star且score &lt;= end的所有元素</p>
+<p>zCount<br>$redis-&gt;zCount(key, star, end);<br>返回名称为key的zset中score &gt;= star且score &lt;= end的所有元素的个数</p>
+<p>zRemRangeByScore, zDeleteRangeByScore<br>$redis-&gt;zRemRangeByScore(‘key’, star, end);<br>删除名称为key的zset中score &gt;= star且score &lt;= end的所有元素，返回删除个数</p>
+<p>zSize, zCard<br>返回名称为key的zset的所有元素的个数</p>
+<p>zScore<br>$redis-&gt;zScore(key, val2);<br>返回名称为key的zset中元素val2的score</p>
+<p>zRank, zRevRank<br>$redis-&gt;zRevRank(key, val);<br>返回名称为key的zset（元素已按score从小到大排序）中val元素的rank（即index，从0开始），若没有val元素，返回“null”。zRevRank 是从大到小排序</p>
+<p>zIncrBy<br>$redis-&gt;zIncrBy(‘key’, increment, ‘member’);<br>如果在名称为key的zset中已经存在元素member，则该元素的score增加increment；否则向集合中添加该元素，其score的值为increment</p>
+<p>zUnion/zInter<br>参数<br>keyOutput<br>arrayZSetKeys<br>arrayWeights<br>aggregateFunction Either “SUM”, “MIN”, or “MAX”: defines the behaviour to use on duplicate entries during the zUnion.<br>对N个zset求并集和交集，并将最后的集合保存在dstkeyN中。对于集合中每一个元素的score，在进行AGGREGATE运算前，都要乘以对于的WEIGHT参数。如果没有提供WEIGHT，默认为1。默认的AGGREGATE是SUM，即结果集合中元素的score是所有集合对应元素进行SUM运算的值，而MIN和MAX是指，结果集合中元素的score是所有集合对应元素中最小值和最大值。</p>
+<p>Hash操作<br>hSet<br>$redis-&gt;hSet(‘h’, ‘key1’, ‘hello’);<br>向名称为h的hash中添加元素key1—&gt;hello</p>
+<p>hGet<br>$redis-&gt;hGet(‘h’, ‘key1’);<br>返回名称为h的hash中key1对应的value（hello）</p>
+<p>hLen<br>$redis-&gt;hLen(‘h’);<br>返回名称为h的hash中元素个数</p>
+<p>hDel<br>$redis-&gt;hDel(‘h’, ‘key1’);<br>删除名称为h的hash中键为key1的域</p>
+<p>hKeys<br>$redis-&gt;hKeys(‘h’);<br>返回名称为key的hash中所有键</p>
+<p>hVals<br>$redis-&gt;hVals(‘h’)<br>返回名称为h的hash中所有键对应的value</p>
+<p>hGetAll<br>$redis-&gt;hGetAll(‘h’);<br>返回名称为h的hash中所有的键（field）及其对应的value</p>
+<p>hExists<br>$redis-&gt;hExists(‘h’, ‘a’);<br>名称为h的hash中是否存在键名字为a的域</p>
+<p>hIncrBy<br>$redis-&gt;hIncrBy(‘h’, ‘x’, 2);<br>将名称为h的hash中x的value增加2</p>
+<p>hMset<br>$redis-&gt;hMset(‘user:1’, array(‘name’ =&gt; ‘Joe’, ‘salary’ =&gt; 2000));<br>向名称为key的hash中批量添加元素</p>
+<p>hMGet<br>$redis-&gt;hmGet(‘h’, array(‘field1’, ‘field2’));<br>返回名称为h的hash中field1,field2对应的value</p>
+<p>redis 操作相关<br>flushDB<br>清空当前数据库</p>
+<p>flushAll<br>清空所有数据库</p>
+<p>randomKey<br>随机返回key空间的一个key<br>$key = $redis-&gt;randomKey();</p>
+<p>select<br>选择一个数据库<br>move<br>转移一个key到另外一个数据库<br>$redis-&gt;select(0); // switch to DB 0<br>$redis-&gt;set(‘x’, ‘42’); // write 42 to x<br>$redis-&gt;move(‘x’, 1); // move to DB 1<br>$redis-&gt;select(1); // switch to DB 1<br>$redis-&gt;get(‘x’); // will return 42</p>
+<p>rename, renameKey<br>给key重命名<br>$redis-&gt;set(‘x’, ‘42’);<br>$redis-&gt;rename(‘x’, ‘y’);<br>$redis-&gt;get(‘y’); // → 42<br>$redis-&gt;get(‘x’); // → <code>FALSE</code></p>
+<p>renameNx<br>与remane类似，但是，如果重新命名的名字已经存在，不会替换成功</p>
+<p>setTimeout, expire<br>设定一个key的活动时间（s）<br>$redis-&gt;setTimeout(‘x’, 3);</p>
+<p>expireAt<br>key存活到一个unix时间戳时间<br>$redis-&gt;expireAt(‘x’, time() + 3);</p>
+<p>keys, getKeys<br>返回满足给定pattern的所有key<br>$keyWithUserPrefix = $redis-&gt;keys(‘user*’);</p>
+<p>dbSize<br>查看现在数据库有多少key<br>$count = $redis-&gt;dbSize();</p>
+<p>auth<br>密码认证<br>$redis-&gt;auth(‘foobared’);</p>
+<p>bgrewriteaof<br>使用aof来进行数据库持久化<br>$redis-&gt;bgrewriteaof();</p>
+<p>slaveof<br>选择从服务器<br>$redis-&gt;slaveof(‘10.0.1.7’, 6379);</p>
+<p>save<br>将数据同步保存到磁盘</p>
+<p>bgsave<br>将数据异步保存到磁盘</p>
+<p>lastSave<br>返回上次成功将数据保存到磁盘的Unix时戳</p>
+<p>info<br>返回redis的版本信息等详情</p>
+<p>type<br>返回key的类型值<br>string: Redis::REDIS_STRING<br>set: Redis::REDIS_SET<br>list: Redis::REDIS_LIST<br>zset: Redis::REDIS_ZSET<br>hash: Redis::REDIS_HASH<br>other: Redis::REDIS_NOT_FOUND</p>
+]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>PHP</tag>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>php-fpm.conf重要参数详解</title>
+    <url>/2017/08/18/php-fpm-conf%E9%87%8D%E8%A6%81%E5%8F%82%E6%95%B0%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<p>pid = run/php-fpm.pid</p>
+<p>#pid设置，默认在安装目录中的var/run/php-fpm.pid，建议开启</p>
+<p>error_log = log/php-fpm.log</p>
+<p>#错误日志，默认在安装目录中的var/log/php-fpm.log</p>
+<p>error_log = log/php-fpm.log</p>
+<p>#错误日志，默认在安装目录中的var/log/php-fpm.log</p>
+<p>log_level = notice</p>
+<p>#错误级别. 可用级别为: alert（必须立即处理）, error（错误情况）, warning（警告情况）, notice（一般重要信息）, debug（调试信息）. 默认: notice.</p>
+<a id="more"></a>
+
+<p>emergency_restart_threshold = 60<br>emergency_restart_interval = 60s</p>
+<p>#表示在emergency_restart_interval所设值内出现SIGSEGV或者SIGBUS错误的php-cgi进程数如果超过 emergency_restart_threshold个，php-fpm就会优雅重启。这两个选项一般保持默认值。</p>
+<p>process_control_timeout = 0</p>
+<p>#设置子进程接受主进程复用信号的超时时间. 可用单位: s(秒), m(分), h(小时), 或者 d(天) 默认单位: s(秒). 默认值: 0.</p>
+<p>daemonize = yes</p>
+<p>#后台执行fpm,默认值为yes，如果为了调试可以改为no。在FPM中，可以使用不同的设置来运行多个进程池。 这些设置可以针对每个进程池单独设置</p>
+<p>listen = 127.0.0.1:9000</p>
+<p>#fpm监听端口，即nginx中php处理的地址，一般默认值即可。可用格式为: ‘ip:port’, ‘port’, ‘/path/to/unix/socket’. 每个进程池都需要设置.</p>
+<p>user = www<br>group = www</p>
+<p>#启动进程的帐户和组</p>
+<p>pm = dynamic</p>
+<p>#对于专用服务器，pm可以设置为static。</p>
+<p>#如何控制子进程，选项有static和dynamic。如果选择static，则由pm.max_children指定固定的子进程数。如果选择dynamic，则由下开参数决定：<br>pm.max_children #，子进程最大数<br>pm.start_servers #，启动时的进程数<br>pm.min_spare_servers #，保证空闲进程数最小值，如果空闲进程小于此值，则创建新的子进程<br>pm.max_spare_servers #，保证空闲进程数最大值，如果空闲进程大于此值，此进行清理</p>
+<p>pm.max_requests = 1000</p>
+<p>#设置每个子进程重生之前服务的请求数. 对于可能存在内存泄漏的第三方模块来说是非常有用的. 如果设置为 ‘0’ 则一直接受请求. 等同于 PHP_FCGI_MAX_REQUESTS 环境变量. 默认值: 0.</p>
+<p>pm.status_path = /status</p>
+<p>#FPM状态页面的网址. 如果没有设置, 则无法访问状态页面. 默认值: none. munin监控会使用到</p>
+<p>ping.path = /ping</p>
+<p>#FPM监控页面的ping网址. 如果没有设置, 则无法访问ping页面. 该页面用于外部检测FPM是否存活并且可以响应请求. 请注意必须以斜线开头 (/)。</p>
+<p>request_terminate_timeout = 20  </p>
+<p>#设置单个请求的超时中止时间. 该选项可能会对php.ini设置中的’max_execution_time’因为某些特殊原因没有中止运行的脚本有用. 设置为 ‘0’ 表示 ‘Off’.当经常出现502错误时可以尝试更改此选项。这个时长配置可以在php.ini（max_execution_time）或php-fpm.conf中配置均可，为了不影响全局配置，可在php-fpm.conf中实现。</p>
+<p>值得注意的是：需要结合nginx.conf中的max_fail（调大些）和fail_timeout（调小些）一同配置。</p>
+<p>rlimit_files = 1024</p>
+<p>#设置文件打开描述符的rlimit限制. 默认值: 系统定义值默认可打开句柄是1024，可使用 ulimit -n查看，ulimit -n 2048修改。</p>
+<p>hp-fpm参数调优</p>
+<p>pm = dynamic;</p>
+<p>表示使用哪种进程数量管理方式</p>
+<p>dynamic表示php-fpm进程数是动态的，最开始是pm.start_servers指定的数量，如果请求较多，则会自动增加，保证空闲的进程数不小于pm.min_spare_servers，如果进程数较多，也会进行相应清理，保证多余的进程数不多于pm.max_spare_servers</p>
+<p>static表示php-fpm进程数是静态的, 进程数自始至终都是pm.max_children指定的数量，不再增加或减少</p>
+<p>pm.max_children = 300;    静态方式下开启的php-fpm进程数量<br>pm.start_servers = 20;    动态方式下的起始php-fpm进程数量<br>pm.min_spare_servers = 5;    动态方式下的最小php-fpm进程数量<br>pm.max_spare_servers = 35;    动态方式下的最大php-fpm进程数量</p>
+<p>request_terminate_timeout = 20;    最长执行时间优化（php.ini） 这个是用来处理因为PHP执行时间超长而报502错误的解决</p>
+<p>最大执行时间, 在php.ini中也可以进行配置(max_execution_time)</p>
+<p>rlimit_files = 10240; 增加php-fpm打开文件描述符的限制</p>
+<p>pm.max_requests = 1000;  最大请求数优化 最大请求数：指一个php-fpm的工作进程在处理多少个请求后就终止掉。</p>
+<p>nginx php-fpm配置过程中最大问题是内泄漏出问题：服务器的负载不大，但是内存占用迅速增加，很快吃掉内存接着开始吃交换分区，系统很快挂掉！其实根据官方的介绍，php-cgi不存在内存泄漏，每个请求完成后php-cgi会回收内存，但是不会释放给操作系统，这样就会导致大量内存被php-cgi占用。</p>
+<p>官方的解决办法是降低PHP_FCGI_MAX_REQUESTS的值，如果用的是php-fpm，对应的php-fpm.conf中的就是max_requests，该值的意思是发送多少个请求后会重启该线程，我们需要适当降低这个值，用以让php-fpm自动的释放内存，不是大部分网上说的51200等等，实际上还有另一个跟它有关联的值max_children，这个是每次php-fpm会建立多少个进程，这样实际上的内存消耗是max_children<em>max_requests</em>每个请求使用内存，根据这个我们可以预估一下内存的使用情况，就不用再写脚本去kill了。</p>
+<p>查看php-fpm进程数：</p>
+<p>ps aux | grep -c php-fpm</p>
+]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>搭建服务器</title>
+    <url>/2017/07/28/%E6%90%AD%E5%BB%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<h3 id="1-执行安装命令"><a href="#1-执行安装命令" class="headerlink" title="1. 执行安装命令"></a>1. 执行安装命令</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">bash &lt;(curl -L -s https://install.direct/go.sh)</span><br></pre></td></tr></table></figure>
+
+<p>正常情况：执行完上述安装命令，将会显示账号的关键信息：端口和UUID</p>
+<a id="more"></a>
+
+<h3 id="2-启动服务"><a href="#2-启动服务" class="headerlink" title="2. 启动服务"></a>2. 启动服务</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo systemctl start ***</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>IP 地址：服务器的 IP 地址</li>
+<li>端口：账号显示的端口</li>
+<li>用户 UUID：账号显示的 UUID</li>
+<li>额外 UD：默认是 64</li>
+<li>加密方式：随便选择，移动端一般建议移动端选择 chacha20-poly-1305，桌面端选择 aes-128-gcm</li>
+<li>其它选择项：保持默认即可，一般可以自由设置的还有路由选项和是否开启Mux 多路复用（开启 Mux 可能会提升速度，但也有几率出现断流，如播放视频突然无法缓冲）</li>
+</ul>
+<h3 id="3-修改配置"><a href="#3-修改配置" class="headerlink" title="3. 修改配置"></a>3. 修改配置</h3><p>更换传输协议、端口和 UUID，可以修改<code>/etc/***/</code>目录下的config.json文件。修改保存后，重启即可生效。</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>PHP的反射机制</title>
+    <url>/2017/06/20/PHP%E7%9A%84%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/</url>
+    <content><![CDATA[<p>介绍：</p>
+<p>PHP5添加了一项新的功能：Reflection。这个功能使得phper可以reverse-engineer class, interface,function,method and extension。通过PHP代码，就可以得到某object的所有信息，并且可以和它交互。<br>反射是什么？<br>它是指在PHP运行状态中，扩展分析PHP程序，导出或提取出关于类、方法、属性、参数等的详细信息，包括注释。这种动态获取的信息以及动态调用对象的方法的功能称为反射API。反射是操纵面向对象范型中元模型的API，其功能十分强大，可帮助我们构建复杂，可扩展的应用。<br>其用途如：自动加载插件，自动生成文档，甚至可用来扩充PHP语言。</p>
+<a id="more"></a>
+
+<p>php反射api由若干类组成，可帮助我们用来访问程序的元数据或者同相关的注释交互。借助反射我们可以获取诸如类实现了那些方法，创建一个类的实例（不同于用new创建），调用一个方法（也不同于常规调用），传递参数，动态调用类的静态方法。<br>反射api是php内建的oop技术扩展，包括一些类，异常和接口，综合使用他们可用来帮助我们分析其它类，接口，方法，属性，方法和扩展。这些oop扩展被称为反射。<br>通过ReflectionClass，我们可以得到Person类的以下信息：</p>
+<pre><code>1）常量 Contants
+
+2）属性 Property Names
+
+3）方法 Method Names静态
+
+4）属性 Static Properties
+
+5）命名空间 Namespace
+
+6)Person类是否为final或者abstract</code></pre><p>例子<br>class Person {<br>    /**<br>     * For the sake of demonstration, we”re setting this private<br>     */<br>    private $_allowDynamicAttributes = false;  </p>
+<pre><code>/** type=primary_autoincrement */  
+protected $id = 0;  
+
+/** type=varchar length=255 null */  
+protected $name;  
+
+/** type=text null */  
+protected $biography;  
+
+    public function getId()  
+    {  
+        return $this-&gt;id;  
+    }  
+    public function setId($v)  
+    {  
+        $this-&gt;id = $v;  
+    }  
+    public function getName()  
+    {  
+        return $this-&gt;name;  
+    }  
+    public function setName($v)  
+    {  
+        $this-&gt;name = $v;  
+    }  
+    public function getBiography()  
+    {  
+        return $this-&gt;biography;  
+    }  
+    public function setBiography($v)  
+    {  
+        $this-&gt;biography = $v;  
+    }  </code></pre><p>}<br>接下来反射它，只要把类名”Person”传递给ReflectionClass就可以了：</p>
+<p>$class = new ReflectionClass(‘Person’);//建立 Person这个类的反射类  </p>
+<p>$instance  = $class-&gt;newInstanceArgs($args);//相当于实例化Person 类  </p>
+<p>1）获取属性(Properties)：<br>$properties = $class-&gt;getProperties();<br>foreach($properties as $property) {<br>    echo $property-&gt;getName().”\n”;<br>}<br>// 输出:<br>// _allowDynamicAttributes<br>// id<br>// name<br>// biography<br>默认情况下，ReflectionClass会获取到所有的属性，private 和 protected的也可以。如果只想获取到private属性，就要额外传个参数：<br>$private_properties = $class-&gt;getProperties(ReflectionProperty::IS_PRIVATE);<br>可用参数列表：<br>               ReflectionProperty::IS_STATIC<br>               ReflectionProperty::IS_PUBLIC<br>               ReflectionProperty::IS_PROTECTED<br>               ReflectionProperty::IS_PRIVATE<br>如果要同时获取public 和private 属性，就这样写：ReflectionProperty::IS_PUBLIC | ReflectionProperty::IS_PROTECTED。</p>
+<p>通过$property-&gt;getName()可以得到属性名。</p>
+<p>2）获取注释：<br> 通过getDocComment可以得到写给property的注释。</p>
+<p>foreach($properties as $property) {  </p>
+<pre><code>if($property-&gt;isProtected()) {  
+
+    $docblock = $property-&gt;getDocComment();  
+
+    preg_match(&apos;/ type\=([a-z_]*) /&apos;, $property-&gt;getDocComment(), $matches);  
+
+    echo $matches[1].&quot;\n&quot;;  
+
+}  </code></pre><p>}  </p>
+<p>// Output:  </p>
+<p>// primary_autoincrement  </p>
+<p>// varchar  </p>
+<p>// text  </p>
+<p>3）获取类的方法<br>获取方法(methods)：通过getMethods() 来获取到类的所有methods。</p>
+<p>4）执行类的方法：<br>$instance-&gt;getBiography(); //执行Person 里的方法getBiography<br>//或者：<br>$ec=$class-&gt;getmethod(‘getName’);  //获取Person 类中的getName方法<br>$ec-&gt;invoke($instance);       //执行getName 方法  </p>
+]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+      <tags>
+        <tag>PHP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>PHP防止表单重复提交的几种常用方法汇总</title>
+    <url>/2017/05/28/PHP%E9%98%B2%E6%AD%A2%E8%A1%A8%E5%8D%95%E9%87%8D%E5%A4%8D%E6%8F%90%E4%BA%A4%E7%9A%84%E5%87%A0%E7%A7%8D%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95%E6%B1%87%E6%80%BB/</url>
+    <content><![CDATA[<p>本文较为详细的汇总了PHP防止表单重复提交的几种常用方法，在PHP程序开发中有着很高的实用价值。具体方法如下：</p>
+<p>1、使用JS让按钮在点击一次后禁用（disable）。采用这种方法可以防止多次点击的发生，实现方式较简单。</p>
+<p>缺点是若客户端禁止JavaScript脚本，则失效。</p>
+<p>2、在提交成功后执行页面重定向（redirect）。转到提交成功信息页面。</p>
+<p>特点：避免F5重复提交，消除浏览器前进和后退按钮可导致的同样问题。</p>
+<p>3、表单隐藏域中存放session（表单被请求时生成的标记）。采用此方法在接收表单数据后，检查此标志值是否存在，先进行删除，然后处理数据；若不存在，说明已提交过，忽略本次提交。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">//服务端生成随机数存入session, 分配至表单页</span><br><span class="line">$data[&apos;sess_id&apos;] = $_SESSION[&apos;sid&apos;] = mt_rand(1000, 9999);</span><br><span class="line">$this-&gt;load-&gt;view(&apos;form&apos;, $data);</span><br><span class="line"></span><br><span class="line">//表单页隐藏域存放此session值</span><br><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;sid&quot; value=&quot;&lt;?=$sess_id; ?&gt;&quot;&gt;</span><br><span class="line"></span><br><span class="line">//处理</span><br><span class="line">if($_POST[&apos;sid&apos;] != &apos;&apos; &amp;&amp; $_POST[&apos;sid&apos;] == $_SESSION[&apos;sid&apos;])</span><br><span class="line">&#123;</span><br><span class="line">　unset($_SESSION[&apos;sid&apos;]);</span><br><span class="line"></span><br><span class="line">　echo &apos;处理数据&apos;;</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">&#123;</span><br><span class="line">　echo &apos;已提交过表单&apos;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4、数据库唯一索引约束（最有效的防止重复数据的方法）。</p>
+]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+      <tags>
+        <tag>PHP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>使用Linux的Crontab定时执行PHP脚本</title>
+    <url>/2017/05/08/%E4%BD%BF%E7%94%A8Linux%E7%9A%84Crontab%E5%AE%9A%E6%97%B6%E6%89%A7%E8%A1%8CPHP%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<p>我们的PHP程序有时候需要定时执行，我们可以使用ignore_user_abort函数或是在页面放置js让用户帮我们实现。但这两种方法都不太可靠，不稳定。我们可以借助Linux的Crontab工具来稳定可靠地触发PHP执行任务。</p>
+<p>下面介绍Crontab的两种方法。</p>
+<a id="more"></a>
+
+<p>一、在Crontab中使用PHP执行脚本 </p>
+<p>就像在Crontab中调用普通的shell脚本一样（具体Crontab用法），使用PHP程序来调用PHP脚本。<br>每一小时执行myscript.php如下： </p>
+<p># crontab -e<br>00 * * * * /usr/local/bin/php /home/john/myscript.php</p>
+<p>/usr/local/bin/php为PHP程序的路径。</p>
+<p>二、在Crontab中使用URL执行脚本</p>
+<p>如果你的PHP脚本可以通过URL触发，你可以使用lynx或curl或wget来配置你的Crontab。<br>下面的例子是使用Lynx文本浏览器访问URL来每小时执行PHP脚本。Lynx文本浏览器默认使用对话方式打开URL。但是，像下面的，我们在lynx命令行中使用-dump选项来把URL的输出转换来标准输出。</p>
+<p>代码如下:</p>
+<p>0 * * * * lynx -dump <a href="http://www.jb51.net/myscript.php" target="_blank" rel="noopener">http://www.jb51.net/myscript.php</a></p>
+<p>下面的例子是使用CURL访问URL来每5分执行PHP脚本。Curl默认在标准输出显示输出。使用”curl -o”选项，你也可以把脚本的输出转储到临时文件。 </p>
+<p>*/5 * * * * /usr/bin/curl -o temp.txt <a href="http://www.jb51.net/myscript.php" target="_blank" rel="noopener">http://www.jb51.net/myscript.php</a></p>
+<p>下面的例子是使用WGET访问URL来每10分执行PHP脚本。-q选项表示安静模式。”-O temp.txt”表示输出会发送到临时文件。 </p>
+<p>*/10 * * * * /usr/bin/wget -q -O temp.txt <a href="http://www.jb51.net/myscript.php" target="_blank" rel="noopener">http://www.jb51.net/myscript.php</a> </p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>PHP</tag>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Elasticsearch-1.7.1 Windows版本安装</title>
+    <url>/2017/04/12/Elasticsearch-1.7.1%20install/</url>
+    <content><![CDATA[<p>1、首先下载最新的elasticsearch安装版本，以下为官网下载地址：</p>
+<p><a href="https://www.elastic.co/downloads/elasticsearch" target="_blank" rel="noopener">https://www.elastic.co/downloads/elasticsearch</a></p>
+<p>下载完成后，解压缩在安装目录。</p>
+<a id="more"></a>
+
+<p>​2、安装JAVA环境</p>
+<p>​<a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a></p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3MxNi5zaW5haW1nLmNuL213NjkwLzAwNjlRMFZ0Z3k2VU80SU1WQTNkZg?x-oss-process=image/format,png" alt="﻿Java SE下载"></p>
+<p>选择合适的版本下载安装，然后配置环境变量。</p>
+<p>(1)新建名为classpath的变量名，变量值为</p>
+<p>.;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar</p>
+<p>(2)新建名为JAVA_HOME的变量名，变量值为之前安装jdk的目录，例如D:\Java\jdk1.7.0_79</p>
+<p>(3)在已有的系统变量path的变量值加上</p>
+<p>;%JAVA_HOME%\bin;%JAVA_HOME%\jre\bin</p>
+<p>自此配置完成，运行cmd命令，输入java回车​，出现以下结果表示配置成功。​</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3MyLnNpbmFpbWcuY24vbXc2OTAvMDA2OVEwVnRneTZVTzVFcXdzOWUx?x-oss-process=image/format,png" alt="﻿"></p>
+<p>3、运行-&gt;cmd，进入elasticsearch安装目录，再进入bin目录，运行elasticsearch.bat：</p>
+<p>启动成功后，在浏览器中输入:<a href="http://localhost:9200/" target="_blank" rel="noopener">http://localhost:9200/</a></p>
+<p>{</p>
+<p>  “status” : 200,</p>
+<p>  “name” : “Living Mummy”,</p>
+<p>  “cluster_name” : “elasticsearch”,</p>
+<p>  “version” : {</p>
+<pre><code>&quot;number&quot; : &quot;1.7.1&quot;,
+
+&quot;build_hash&quot; : &quot;b88f43fc40b0bcd7f173a1f9ee2e97816de80b19&quot;,
+
+&quot;build_timestamp&quot; : &quot;2015-07-29T09:54:16Z&quot;,
+
+&quot;build_snapshot&quot; : false,
+
+&quot;lucene_version&quot; : &quot;4.10.4&quot;</code></pre><p>  },</p>
+<p>  “tagline” : “You Know, for Search”</p>
+<p>}</p>
+<p>表示安装成功了。​</p>
+<p>4、将elasticsearch安装成系统服务​</p>
+<p>(1). 在Linux上运行系统服务</p>
+<p>如果是从提供的二进制包安装的Elasticsearch，你已经完成了，什么都不用担心。但是，如果你刚刚下载归档文件，解压到所选择的目录，就需要做一些额外的工作。为了将Elasticsearch安装成一个Linux系统服务，将使用Elasticsearch service wrapper，你可以从<a href="https://github.com/" target="_blank" rel="noopener">https://github.com/</a> elasticsearch/elasticsearch-servicewrapper下载。</p>
+<p>来看看使用Elasticsearch service wrapper建立Elasticsearch Linux服务的步骤。首先，执行以下命令来下载这个wrapper：</p>
+<p>curl -L <a href="http://github.com/elasticsearch/elasticsearch-" target="_blank" rel="noopener">http://github.com/elasticsearch/elasticsearch-</a></p>
+<p>servicewrapper/tarball/master</p>
+<p>tar -xz</p>
+<p>假设Elasticsearch已经安装在/usr/local/share/elasticsearch下，执行如下命令来移动所需的wrapper文件：</p>
+<p>sudo mv <em>servicewrapper</em>/service/usr/local/share/elasticsearch/bin/</p>
+<p>执行如下命令来移除剩余的文件</p>
+<p>rm -Rf <em>servicewrapper</em></p>
+<p>最后，通过执行install命令来安装服务：</p>
+<p>sudo /usr/local/share/elasticsearch/bin/service/elasticsearch install</p>
+<p>在这之后，需要创建一个符号链接指向/usr/local/bin/rcelasticsearch下的/usr/local/share/elasticsearch/bin/service/elasticsearch脚本。可通过运行如下命令来实现：</p>
+<p>sudo ln -s ‘readlink -f</p>
+<p>/usr/local/share/elasticsearch/bin/service/elasticsearch’</p>
+<p>/usr/local/bin/rcelasticsearch</p>
+<p>就这样。如果你想启动Elasticsearch，执行如下命令：</p>
+<p>/etc/init.d/elasticsearch start</p>
+<p>(2). 在Windows上运行系统服务</p>
+<p>在Windows下把Elasticsearch安装为系统服务非常容易，你只需转到Elasticsearch的安装目录，到bin子目录下，执行:</p>
+<p>service.bat install</p>
+<p>你会被问及操作权限，允许脚本运行，Elasticsearch就被安装成一个Windows服务。</p>
+<p>如果你想看看所有被service.bat脚本文件暴露出来的命令，在相同目录下执行：</p>
+<p>service.bat</p>
+<p>例如，为了启动Elasticsearch，可执行如下命令：</p>
+<p>service.bat start</p>
+<hr>
+<p>elasticsearch插件elasticsearch-head安装：</p>
+<p>elasticsearch-head是一个elasticsearch的集群管理工具，它是完全由html5编写的独立网页程序，你可以通过插件把它集成到es。</p>
+<p>在cmd命令行中进入安装目录，再进入 bin目录，运行以下命令：</p>
+<p>plugin -install mobz/elasticsearch-head</p>
+<p>然后安装成功后，\plugins目录下会有head的文件夹。在浏览器中输入:<a href="http://localhost:9200/_plugin/head/，可以看到效果。" target="_blank" rel="noopener">http://localhost:9200/_plugin/head/，可以看到效果。</a></p>
+<p>elasticsearch插件bigdesk安装：</p>
+<p>bigdesk是elasticsearch的一个集群监控工具，可以通过它来查看es集群的各种状态，如：cpu、内存使用情况，索引数据、搜索情况，http连接数等。</p>
+<p>在cmd命令行中进入安装目录，再进入 bin目录，运行以下命令：</p>
+<p>plugin -install lukas-vlcek/bigdesk</p>
+<p>然后安装成功后，在浏览器中输入:<a href="http://localhost:9200/_plugin/bigdesk/，可以看到效果。" target="_blank" rel="noopener">http://localhost:9200/_plugin/bigdesk/，可以看到效果。</a></p>
+]]></content>
+      <tags>
+        <tag>Elasticsearch</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Apache局域网内ip配置</title>
+    <url>/2017/04/10/Apache%E5%B1%80%E5%9F%9F%E7%BD%91%E5%86%85ip%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;Directory /&gt;</span><br><span class="line"></span><br><span class="line">    Options FollowSymLinks</span><br><span class="line">    AllowOverride ALL</span><br><span class="line">    Order deny,allow</span><br><span class="line">    Allow from all</span><br><span class="line"></span><br><span class="line">&lt;/Directory&gt;</span><br></pre></td></tr></table></figure>
+
+<p>配置虚拟主机</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;VirtualHost 192.168.0.18&gt;        </span><br><span class="line">DocumentRoot &quot;D:/wamp/www&quot;</span><br><span class="line">ServerName 192.168.0.18</span><br><span class="line">&lt;/VirtualHost&gt;</span><br></pre></td></tr></table></figure>]]></content>
+      <tags>
+        <tag>Apache</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown语法详解</title>
+    <url>/2017/04/02/Markdown/</url>
+    <content><![CDATA[<h1 id="Cmd-Markdown-简明语法手册"><a href="#Cmd-Markdown-简明语法手册" class="headerlink" title="Cmd Markdown 简明语法手册"></a>Cmd Markdown 简明语法手册</h1><hr>
+<h2 id="1-斜体和粗体"><a href="#1-斜体和粗体" class="headerlink" title="1. 斜体和粗体"></a>1. 斜体和粗体</h2><p>使用 * 和 ** 表示斜体和粗体。</p>
+<p>示例：</p>
+<p>这是 <em>斜体</em>，这是 <strong>粗体</strong>。</p>
+<h2 id="2-分级标题"><a href="#2-分级标题" class="headerlink" title="2. 分级标题"></a>2. 分级标题</h2><p>使用 === 表示一级标题，使用 --- 表示二级标题。</p>
+<p>示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">这是一个一级标题</span><br><span class="line">============================</span><br><span class="line"></span><br><span class="line">这是一个二级标题</span><br><span class="line">--------------------------------------------------</span><br><span class="line"></span><br><span class="line">### 这是一个三级标题</span><br></pre></td></tr></table></figure>
+
+<p>你也可以选择在行首加井号表示不同级别的标题 (H1-H6)，例如：# H1, ## H2, ### H3，#### H4。</p>
+<h2 id="3-外链接"><a href="#3-外链接" class="headerlink" title="3. 外链接"></a>3. 外链接</h2><p>使用 [描述](链接地址) 为文字增加外链接。</p>
+<p>示例：</p>
+<p>这是去往 <a href="https://weimjay.github.io" target="_blank" rel="noopener">本人博客</a> 的链接。</p>
+<h2 id="4-无序列表"><a href="#4-无序列表" class="headerlink" title="4. 无序列表"></a>4. 无序列表</h2><p>使用 *，+，- 表示无序列表。</p>
+<p>示例：</p>
+<ul>
+<li>无序列表项 一</li>
+<li>无序列表项 二</li>
+<li>无序列表项 三</li>
+</ul>
+<h2 id="5-有序列表"><a href="#5-有序列表" class="headerlink" title="5. 有序列表"></a>5. 有序列表</h2><p>使用数字和点表示有序列表。</p>
+<p>示例：</p>
+<ol>
+<li>有序列表项 一</li>
+<li>有序列表项 二</li>
+<li>有序列表项 三</li>
+</ol>
+<a id="more"></a>
+
+<h2 id="6-文字引用"><a href="#6-文字引用" class="headerlink" title="6. 文字引用"></a>6. 文字引用</h2><p>使用 &gt; 表示文字引用。</p>
+<p>示例：</p>
+<blockquote>
+<p>野火烧不尽，春风吹又生。</p>
+</blockquote>
+<h2 id="7-行内代码块"><a href="#7-行内代码块" class="headerlink" title="7. 行内代码块"></a>7. 行内代码块</h2><p>使用 `代码` 表示行内代码块。</p>
+<p>示例：</p>
+<p>让我们聊聊 <code>html</code>。</p>
+<h2 id="8-代码块"><a href="#8-代码块" class="headerlink" title="8.  代码块"></a>8.  代码块</h2><p>使用 四个缩进空格 表示代码块。</p>
+<p>示例：</p>
+<pre><code>这是一个代码块，此行左侧有四个不可见的空格。</code></pre><h2 id="9-插入图像"><a href="#9-插入图像" class="headerlink" title="9.  插入图像"></a>9.  插入图像</h2><p>使用 ![描述](图片链接地址) 插入图像。</p>
+<p>示例：</p>
+<p><img src="https://www.zybuluo.com/static/img/logo.png" alt="logo"></p>
+<hr>
+<h1 id="Cmd-Markdown-高阶语法手册"><a href="#Cmd-Markdown-高阶语法手册" class="headerlink" title="Cmd Markdown 高阶语法手册"></a>Cmd Markdown 高阶语法手册</h1><h2 id="1-内容目录"><a href="#1-内容目录" class="headerlink" title="1. 内容目录"></a>1. 内容目录</h2><p>在段落中填写 <code>[TOC]</code> 以显示全文内容的目录结构。</p>
+<p>[TOC]</p>
+<h2 id="2-标签分类"><a href="#2-标签分类" class="headerlink" title="2. 标签分类"></a>2. 标签分类</h2><p>在编辑区任意行的列首位置输入以下代码给文稿标签：</p>
+<p>标签： 数学 英语 Markdown</p>
+<p>或者</p>
+<p>Tags： 数学 英语 Markdown</p>
+<h2 id="3-删除线"><a href="#3-删除线" class="headerlink" title="3. 删除线"></a>3. 删除线</h2><p>使用 ~~ 表示删除线。</p>
+<p><del>这是一段错误的文本。</del></p>
+<h2 id="4-注脚"><a href="#4-注脚" class="headerlink" title="4. 注脚"></a>4. 注脚</h2><p>使用 [^keyword] 表示注脚。</p>
+<p>这是一个注脚[^footnote]的样例。</p>
+<p>这是第二个注脚[^footnote2]的样例。</p>
+<h2 id="5-LaTeX-公式"><a href="#5-LaTeX-公式" class="headerlink" title="5. LaTeX 公式"></a>5. LaTeX 公式</h2><p>$ 表示行内公式： </p>
+<p>质能守恒方程可以用一个很简洁的方程式 $E=mc^2$ 来表达。</p>
+<p>$$ 表示整行公式：</p>
+<p>$$\sum_{i=1}^n a_i=0$$</p>
+<p>$$f(x_1,x_x,\ldots,x_n) = x_1^2 + x_2^2 + \cdots + x_n^2 $$</p>
+<p>$$\sum^{j-1}<em>{k=0}{\widehat{\gamma}</em>{kj} z_k}$$</p>
+<p>访问 <a href="http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference" target="_blank" rel="noopener">MathJax</a> 参考更多使用方法。</p>
+<h2 id="6-加强的代码块"><a href="#6-加强的代码块" class="headerlink" title="6. 加强的代码块"></a>6. 加强的代码块</h2><p>支持四十一种编程语言的语法高亮的显示，行号显示。</p>
+<p>非代码示例：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install vim-gnome</span><br></pre></td></tr></table></figure>
+
+<p>Python 示例：</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="meta">@requires_authorization</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">somefunc</span><span class="params">(param1=<span class="string">''</span>, param2=<span class="number">0</span>)</span>:</span></span><br><span class="line">    <span class="string">'''A docstring'''</span></span><br><span class="line">    <span class="keyword">if</span> param1 &gt; param2: <span class="comment"># interesting</span></span><br><span class="line">        <span class="keyword">print</span> <span class="string">'Greater'</span></span><br><span class="line">    <span class="keyword">return</span> (param2 - param1 + <span class="number">1</span>) <span class="keyword">or</span> <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SomeClass</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>message = <span class="string">'''interpreter</span></span><br><span class="line"><span class="string"><span class="meta">... </span>prompt'''</span></span><br></pre></td></tr></table></figure>
+
+<p>JavaScript 示例：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* nth element in the fibonacci series.</span></span><br><span class="line"><span class="comment">* <span class="doctag">@param </span>n &gt;= 0</span></span><br><span class="line"><span class="comment">* <span class="doctag">@return </span>the nth element, &gt;= 0.</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">fib</span>(<span class="params">n</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> a = <span class="number">1</span>, b = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">var</span> tmp;</span><br><span class="line">  <span class="keyword">while</span> (--n &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">    tmp = a;</span><br><span class="line">    a += b;</span><br><span class="line">    b = tmp;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> a;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">document</span>.write(fib(<span class="number">10</span>));</span><br></pre></td></tr></table></figure>
+
+<h2 id="7-流程图"><a href="#7-流程图" class="headerlink" title="7. 流程图"></a>7. 流程图</h2><h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">st=&gt;start: Start:&gt;https://www.zybuluo.com</span><br><span class="line">io=&gt;inputoutput: verification</span><br><span class="line">op=&gt;operation: Your Operation</span><br><span class="line">cond=&gt;condition: Yes or No?</span><br><span class="line">sub=&gt;subroutine: Your Subroutine</span><br><span class="line">e=&gt;end</span><br><span class="line"></span><br><span class="line">st-&gt;io-&gt;op-&gt;cond</span><br><span class="line">cond(yes)-&gt;e</span><br><span class="line">cond(no)-&gt;sub-&gt;io</span><br></pre></td></tr></table></figure>
+
+<h3 id="更多语法参考：流程图语法参考"><a href="#更多语法参考：流程图语法参考" class="headerlink" title="更多语法参考：流程图语法参考"></a>更多语法参考：<a href="http://adrai.github.io/flowchart.js/" target="_blank" rel="noopener">流程图语法参考</a></h3><h2 id="8-序列图"><a href="#8-序列图" class="headerlink" title="8. 序列图"></a>8. 序列图</h2><h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例 1"></a>示例 1</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Alice-&gt;Bob: Hello Bob, how are you?</span><br><span class="line">Note right of Bob: Bob thinks</span><br><span class="line">Bob--&gt;Alice: I am good thanks!</span><br></pre></td></tr></table></figure>
+
+<h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例 2"></a>示例 2</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Title: Here is a title</span><br><span class="line">A-&gt;B: Normal line</span><br><span class="line">B--&gt;C: Dashed line</span><br><span class="line">C-&gt;&gt;D: Open arrow</span><br><span class="line">D--&gt;&gt;A: Dashed open arrow</span><br></pre></td></tr></table></figure>
+
+<h3 id="更多语法参考：序列图语法参考"><a href="#更多语法参考：序列图语法参考" class="headerlink" title="更多语法参考：序列图语法参考"></a>更多语法参考：<a href="http://bramp.github.io/js-sequence-diagrams/" target="_blank" rel="noopener">序列图语法参考</a></h3><h2 id="9-甘特图"><a href="#9-甘特图" class="headerlink" title="9. 甘特图"></a>9. 甘特图</h2><p>甘特图内在思想简单。基本是一条线条图，横轴表示时间，纵轴表示活动（项目），线条表示在整个期间上计划和实际的活动完成情况。它直观地表明任务计划在什么时候进行，及实际进展与计划要求的对比。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title 项目开发流程</span><br><span class="line">section 项目确定</span><br><span class="line">    需求分析       :a1, 2016-06-22, 3d</span><br><span class="line">    可行性报告     :after a1, 5d</span><br><span class="line">    概念验证       : 5d</span><br><span class="line">section 项目实施</span><br><span class="line">    概要设计      :2016-07-05  , 5d</span><br><span class="line">    详细设计      :2016-07-08, 10d</span><br><span class="line">    编码          :2016-07-15, 10d</span><br><span class="line">    测试          :2016-07-22, 5d</span><br><span class="line">section 发布验收</span><br><span class="line">    发布: 2d</span><br><span class="line">    验收: 3d</span><br></pre></td></tr></table></figure>
+
+<h3 id="更多语法参考：甘特图语法参考"><a href="#更多语法参考：甘特图语法参考" class="headerlink" title="更多语法参考：甘特图语法参考"></a>更多语法参考：<a href="https://knsv.github.io/mermaid/#gant-diagrams" target="_blank" rel="noopener">甘特图语法参考</a></h3><h2 id="10-Mermaid-流程图"><a href="#10-Mermaid-流程图" class="headerlink" title="10. Mermaid 流程图"></a>10. Mermaid 流程图</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">A[Hard edge] --&gt;|Link text| B(Round edge)</span><br><span class="line">B --&gt; C&#123;Decision&#125;</span><br><span class="line">C --&gt;|One| D[Result one]</span><br><span class="line">C --&gt;|Two| E[Result two]</span><br></pre></td></tr></table></figure>
+
+<h3 id="更多语法参考：Mermaid-流程图语法参考"><a href="#更多语法参考：Mermaid-流程图语法参考" class="headerlink" title="更多语法参考：Mermaid 流程图语法参考"></a>更多语法参考：<a href="https://knsv.github.io/mermaid/#flowcharts-basic-syntax" target="_blank" rel="noopener">Mermaid 流程图语法参考</a></h3><h2 id="11-Mermaid-序列图"><a href="#11-Mermaid-序列图" class="headerlink" title="11. Mermaid 序列图"></a>11. Mermaid 序列图</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Alice-&gt;John: Hello John, how are you?</span><br><span class="line">loop every minute</span><br><span class="line">    John--&gt;Alice: Great!</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<h3 id="更多语法参考：Mermaid-序列图语法参考"><a href="#更多语法参考：Mermaid-序列图语法参考" class="headerlink" title="更多语法参考：Mermaid 序列图语法参考"></a>更多语法参考：<a href="https://knsv.github.io/mermaid/#sequence-diagrams" target="_blank" rel="noopener">Mermaid 序列图语法参考</a></h3><h2 id="12-表格支持"><a href="#12-表格支持" class="headerlink" title="12. 表格支持"></a>12. 表格支持</h2><table>
+<thead>
+<tr>
+<th>项目</th>
+<th align="right">价格</th>
+<th align="center">数量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>计算机</td>
+<td align="right">$1600</td>
+<td align="center">5</td>
+</tr>
+<tr>
+<td>手机</td>
+<td align="right">$12</td>
+<td align="center">12</td>
+</tr>
+<tr>
+<td>管线</td>
+<td align="right">$1</td>
+<td align="center">234</td>
+</tr>
+</tbody></table>
+<h2 id="13-定义型列表"><a href="#13-定义型列表" class="headerlink" title="13. 定义型列表"></a>13. 定义型列表</h2><dl><dt>名词 1</dt><dd>定义 1（左侧有一个可见的冒号和四个不可见的空格）</dd></dl><dl><dt>代码块 2</dt><dd>这是代码块的定义（左侧有一个可见的冒号和四个不可见的空格）</dd></dl><pre><code>代码块（左侧有八个不可见的空格）</code></pre><h2 id="14-Html-标签"><a href="#14-Html-标签" class="headerlink" title="14. Html 标签"></a>14. Html 标签</h2><p>本站支持在 Markdown 语法中嵌套 Html 标签，譬如，你可以用 Html 写一个纵跨两行的表格：</p>
+<pre><code>&lt;table&gt;
+    &lt;tr&gt;
+        &lt;th rowspan=&quot;2&quot;&gt;值班人员&lt;/th&gt;
+        &lt;th&gt;星期一&lt;/th&gt;
+        &lt;th&gt;星期二&lt;/th&gt;
+        &lt;th&gt;星期三&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;李强&lt;/td&gt;
+        &lt;td&gt;张明&lt;/td&gt;
+        &lt;td&gt;王平&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;</code></pre><table>
+    <tr>
+        <th rowspan="2">值班人员</th>
+        <th>星期一</th>
+        <th>星期二</th>
+        <th>星期三</th>
+    </tr>
+    <tr>
+        <td>李强</td>
+        <td>张明</td>
+        <td>王平</td>
+    </tr>
+</table>
+
+<h2 id="15-内嵌图标"><a href="#15-内嵌图标" class="headerlink" title="15. 内嵌图标"></a>15. 内嵌图标</h2><p>本站的图标系统对外开放，在文档中输入</p>
+<pre><code>&lt;i class=&quot;icon-weibo&quot;&gt;&lt;/i&gt;</code></pre><p>即显示微博的图标： <i class="icon-weibo icon-2x"></i></p>
+<p>替换 上述 <code>i 标签</code> 内的 <code>icon-weibo</code> 以显示不同的图标，例如：</p>
+<pre><code>&lt;i class=&quot;icon-renren&quot;&gt;&lt;/i&gt;</code></pre><p>即显示人人的图标： <i class="icon-renren icon-2x"></i></p>
+<p>更多的图标和玩法可以参看 <a href="http://fortawesome.github.io/Font-Awesome/3.2.1/icons/" target="_blank" rel="noopener">font-awesome</a> 官方网站。</p>
+<h2 id="16-待办事宜-Todo-列表"><a href="#16-待办事宜-Todo-列表" class="headerlink" title="16. 待办事宜 Todo 列表"></a>16. 待办事宜 Todo 列表</h2><p>使用带有 [ ] 或 [x] （未完成或已完成）项的列表语法撰写一个待办事宜列表，并且支持子列表嵌套以及混用Markdown语法，例如：</p>
+<pre><code>- [ ] **Cmd Markdown 开发**
+    - [ ] 改进 Cmd 渲染算法，使用局部渲染技术提高渲染效率
+    - [ ] 支持以 PDF 格式导出文稿
+    - [x] 新增Todo列表功能 [语法参考](https://github.com/blog/1375-task-lists-in-gfm-issues-pulls-comments)
+    - [x] 改进 LaTex 功能
+        - [x] 修复 LaTex 公式渲染问题
+        - [x] 新增 LaTex 公式编号功能 [语法参考](http://docs.mathjax.org/en/latest/tex.html#tex-eq-numbers)
+- [ ] **七月旅行准备**
+    - [ ] 准备邮轮上需要携带的物品
+    - [ ] 浏览日本免税店的物品
+    - [x] 购买蓝宝石公主号七月一日的船票</code></pre><p>对应显示如下待办事宜 Todo 列表：</p>
+<ul>
+<li><input disabled type="checkbox"> <strong>Cmd Markdown 开发</strong><ul>
+<li><input disabled type="checkbox"> 改进 Cmd 渲染算法，使用局部渲染技术提高渲染效率</li>
+<li><input disabled type="checkbox"> 支持以 PDF 格式导出文稿</li>
+<li><input checked disabled type="checkbox"> 新增Todo列表功能 <a href="https://github.com/blog/1375-task-lists-in-gfm-issues-pulls-comments" target="_blank" rel="noopener">语法参考</a></li>
+<li><input checked disabled type="checkbox"> 改进 LaTex 功能<ul>
+<li><input checked disabled type="checkbox"> 修复 LaTex 公式渲染问题</li>
+<li><input checked disabled type="checkbox"> 新增 LaTex 公式编号功能 <a href="http://docs.mathjax.org/en/latest/tex.html#tex-eq-numbers" target="_blank" rel="noopener">语法参考</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><input disabled type="checkbox"> <strong>七月旅行准备</strong><ul>
+<li><input disabled type="checkbox"> 准备邮轮上需要携带的物品</li>
+<li><input disabled type="checkbox"> 浏览日本免税店的物品</li>
+<li><input checked disabled type="checkbox"> 购买蓝宝石公主号七月一日的船票</li>
+</ul>
+</li>
+</ul>
+<p>[^footnote]: 这是一个 <em>注脚</em> 的 <strong>文本</strong>。</p>
+<p>[^footnote2]: 这是另一个 <em>注脚</em> 的 <strong>文本</strong>。</p>
+]]></content>
+      <tags>
+        <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Github + Hexo 搭建静态博客</title>
+    <url>/2017/04/02/Github%20+%20Hexo/</url>
+    <content><![CDATA[<h2 id="为什么选择GitHub-Pages？"><a href="#为什么选择GitHub-Pages？" class="headerlink" title="为什么选择GitHub Pages？"></a>为什么选择GitHub Pages？</h2><ul>
+<li>1、github pages有300M免费空间，资料自己管理，保存可靠；</li>
+<li>2、可定制性极强，可以结合Hexo框架搭建静态博客，不需要数据库，访问速度快；</li>
+<li>3、github是世界上最大的技术分享网站，使用它能让我们眼界更加开阔。</li>
+</ul>
+<h2 id="如何搭建静态博客？"><a href="#如何搭建静态博客？" class="headerlink" title="如何搭建静态博客？"></a>如何搭建静态博客？</h2><p>大概可以分为以下几个步骤</p>
+<blockquote>
+<p>1.搭建环境准备（包括node.js和git环境，github账户的配置）<br>2.Hexo的安装与配置<br>3.在Github Pages上部署Hexo框架<br>4.发布文章<br>5.主题NexT的简单配置<br>6.添加feed和sitemap插件<br>7.添加404公益页面</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="搭建环境准备"><a href="#搭建环境准备" class="headerlink" title="搭建环境准备"></a>搭建环境准备</h2><p>大概可以分为以下三步 </p>
+<ul>
+<li>Node.js 的安装和准备 </li>
+<li>Git的安装和准备 </li>
+<li>gitHub账户的配置</li>
+</ul>
+<h3 id="配置Node-js环境"><a href="#配置Node-js环境" class="headerlink" title="配置Node.js环境"></a>配置Node.js环境</h3><p>下载安装Node.js：<br><a href="https://nodejs.org" target="_blank" rel="noopener">https://nodejs.org</a></p>
+<p>所有设置保持默认即可，安装完成后，检查是否安装正确，打开cmd命令行窗口，输入</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
+
+<p>如果结果如下图所示，则说明安装正确，可以进行下一步了，如果不正确，则需要回头检查自己的安装过程。<br><img src="http://ww4.sinaimg.cn/large/9fe4afa0gw1faljiuibwdj20it0cb3zd.jpg" alt></p>
+<h3 id="配置Git环境"><a href="#配置Git环境" class="headerlink" title="配置Git环境"></a>配置Git环境</h3><p>下载安装Git：<br><a href="https://git-scm.com/downloads" target="_blank" rel="noopener">https://git-scm.com/downloads</a></p>
+<p>和Node.js一样，大部分设置都只需要保持默认，但是出于我们操作方便考虑，建议PATH选项按照下图选择：<br>Git PATH设置<br><img src="http://ww4.sinaimg.cn/large/9fe4afa0gw1faljmop0mbj20dz0atwhi.jpg" alt></p>
+<p>一样的，我们来检查一下Git是不是安装正确了，打开命令行，输入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git --version</span><br></pre></td></tr></table></figure>
+
+<p>如果结果如下图所示，则说明安装正确，可以进行下一步了，如果不正确，则需要回头检查自己的安装过程。<br><img src="http://ww2.sinaimg.cn/large/9fe4afa0gw1faljp87tpkj20it0cbdgo.jpg" alt></p>
+<h3 id="github账户的注册和配置"><a href="#github账户的注册和配置" class="headerlink" title="github账户的注册和配置"></a>github账户的注册和配置</h3><p>如果已经拥有账号，请跳过此步~</p>
+<p>1.Github注册：<a href="https://github.com/" target="_blank" rel="noopener">https://github.com/</a></p>
+<p>2.创建代码库<br>登陆之后，点击页面右上角的加号，选择New repository：<br><img src="http://ww2.sinaimg.cn/large/9fe4afa0gw1faljww56v8j20ci0a975c.jpg" alt></p>
+<p>进入到代码库创建页面，在Repository name下填写yourname.github.io，Description (optional)下填写一些简单的描述（可选），如图所示：<br><img src="http://ww4.sinaimg.cn/large/9fe4afa0gw1faljv7hoqhj20p40fz0vo.jpg" alt></p>
+<p>3.代码库设置<br>接下来开启Github pages功能，点击界面右侧的Settings，找到GitHub Pages，Source选择master branch，并保存。此时，如果配置正确，<a href="https://yourname.github.io" target="_blank" rel="noopener">https://yourname.github.io</a> 这个网址就可以正常访问了。</p>
+<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>在自己认为合适的地方创建一个文件夹，这里我以E:\hexo 为例子讲解，首先在E盘目录下创建Hexo文件夹，并在命令行的窗口进入到该目录<br><img src="http://ww4.sinaimg.cn/large/9fe4afa0gw1falkb6ao3oj2064032a9x.jpg" alt></p>
+<p>在命令行中输入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br></pre></td></tr></table></figure>
+
+<p>然后你将会看到：<br><img src="http://ww3.sinaimg.cn/large/9fe4afa0gw1falkcr5z7kj20ce074aav.jpg" alt></p>
+<p>可能你会看到一个WARN，但是不用担心，这不会影响你的正常使用。 然后输入</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install hexo --save</span><br></pre></td></tr></table></figure>
+
+<p>等待hexo安装完成之后，输入</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+
+<p>如果你看到了如图文字，则说明已经安装成功了。<br><img src="http://ww2.sinaimg.cn/large/9fe4afa0gw1falkf052h7j205r06f0su.jpg" alt></p>
+<h2 id="Hexo的相关配置"><a href="#Hexo的相关配置" class="headerlink" title="Hexo的相关配置"></a>Hexo的相关配置</h2><p>1.初始化Hexo<br>接着上面的操作，输入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo init</span><br></pre></td></tr></table></figure>
+
+<p>然后输入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure>
+
+<p>之后npm将会自动安装你需要的组件，只需要等待npm操作即可。<br>2.首次体验Hexo<br>继续操作，同样是在命令行中，输入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww3.sinaimg.cn/large/9fe4afa0gw1falkiaws1xj208p045t9j.jpg" alt><br>然后输入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<p>然后会提示：</p>
+<blockquote>
+<p>INFO   Hexo is running at <a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000/</a>. Press Ctrl+C to stop.</p>
+</blockquote>
+<p>在浏览器中打开<a href="http://localhost:4000/，你将会看到：" target="_blank" rel="noopener">http://localhost:4000/，你将会看到：</a><br><img src="http://ww4.sinaimg.cn/large/9fe4afa0gw1falkk5mnsvj211y0lcten.jpg" alt></p>
+<p>到目前为止，Hexo在本地的配置已经全都结束了，下面会讲解如何Github pages上部署Hexo。</p>
+<h2 id="在Github-Pages上部署Hexo"><a href="#在Github-Pages上部署Hexo" class="headerlink" title="在Github Pages上部署Hexo"></a>在Github Pages上部署Hexo</h2><h3 id="配置Git个人信息"><a href="#配置Git个人信息" class="headerlink" title="配置Git个人信息"></a>配置Git个人信息</h3><p>1、设置Git的user name和email：(如果是第一次的话)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">git config --global user.name &quot;yourname&quot;</span><br><span class="line">git config --global user.email &quot;yourname@gmail.com&quot;</span><br></pre></td></tr></table></figure>
+
+<p>检查是否已经有SSH Key</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">cd ~/.ssh</span><br></pre></td></tr></table></figure>
+
+<p>接着输入ls命令，列出该文件下的文件，看是否存在 id_isa 和 id_isa.pub 文件（也可以是别的文件名，只要 yourName 和 yourName.pub 承兑存在），如果有，证明已经存在 ssh key了，可以直接跳过生成密钥这一步骤。<br>下图是已经存在ssh key的情况：<br><img src="http://ww2.sinaimg.cn/large/9fe4afa0jw1famro8k282j20d3026jrq.jpg" alt></p>
+<p>2、生成密钥</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -C &quot;yourname@gmail.com&quot;</span><br></pre></td></tr></table></figure>
+
+<p>如果不需要密码的话，连续3个回车。<br>最后生成了两个文件：id_rsa和id_rsa.pub，存储路径是C:\Users\Administrator.ssh</p>
+<p>3、添加密钥到ssh-agent<br>确保 ssh-agent 是可用的。ssh-agent是一种控制用来保存公钥身份验证所使用的私钥的程序，其实ssh-agent就是一个密钥管理器，运行ssh-agent以后，使用ssh-add将私钥交给ssh-agent保管，其他程序需要身份验证的时候可以将验证申请交给ssh-agent来完成整个认证过程。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># start the ssh-agent in the background</span><br><span class="line">eval &quot;$(ssh-agent -s)&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww3.sinaimg.cn/large/9fe4afa0gw1fammrmpcbfj20as02eaad.jpg" alt><br>添加生成的 SSH key 到 ssh-agent</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ssh-add ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+
+<p>4、登陆Github, 添加ssh<br>Settings-&gt;Deploy keys-&gt;Add deploy key<br>Title名称自定义，把id_rsa.pub文件里的内容复制到Key里面，勾选Allow write access，保存：<br><img src="http://wx3.sinaimg.cn/large/0069Q0Vtgy1fe9kd1dw1uj30qx0bwq36.jpg" alt></p>
+<p>5、测试ssh连接</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+<p>下图表示连接成功<br><img src="http://wx3.sinaimg.cn/large/0069Q0Vtly1fe9k971ohgj30fk02qdfq.jpg" alt></p>
+<h3 id="配置Deployment"><a href="#配置Deployment" class="headerlink" title="配置Deployment"></a>配置Deployment</h3><p>在根目录的_config.yml文件中，找到Deployment，然后按照如下修改：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: git@github.com:yourname/yourname.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+
+<h2 id="发布文章"><a href="#发布文章" class="headerlink" title="发布文章"></a>发布文章</h2><p>需要先安装一个扩展：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+<p>新建一篇文章，执行下面的命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo new post &quot;article title&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这时候在我的电脑的目录下 E:\hexo\source_posts 将会看到 article title.md 文件<br>用MarDown编辑器打开就可以编辑文章了。文章编辑好之后，运行生成、部署命令：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo g   // 生成</span><br><span class="line">hexo d   // 部署</span><br></pre></td></tr></table></figure>
+
+<p>当然你也可以执行下面的命令，相当于上面两条命令的效果</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo d -g #在部署前先生成</span><br></pre></td></tr></table></figure>
+
+<p>注意：如果出现下面这样的错误</p>
+<blockquote>
+<p>Permission denied (publickey).<br>fatal: Could not read from remote repository.<br>Please make sure you have the correct access rights<br>and the repository exists.</p>
+</blockquote>
+<p>则是因为没有设置好public key所致。<br>在本机生成public key，不懂的可以参考<a href>Git ssh 配置及使用</a></p>
+<h2 id="主题推荐"><a href="#主题推荐" class="headerlink" title="主题推荐"></a>主题推荐</h2><p><strong>NexT</strong><br>目前Github上Star最高的Hexo主题，支持几种不同的风格。<br>作者提供了非常完善的配置说明：<br><a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">http://theme-next.iissnan.com/getting-started.html</a></p>
+<h2 id="添加插件"><a href="#添加插件" class="headerlink" title="添加插件"></a>添加插件</h2><p>添加feed和sitemap插件<br>切换到你本地的hexo目录，在命令行窗口，输入以下命令</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install hexo-generator-feed -save</span><br><span class="line">npm install hexo-generator-sitemap -save</span><br></pre></td></tr></table></figure>
+
+<p>修改_config.yml，增加以下内容</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># Extensions</span><br><span class="line">Plugins:</span><br><span class="line">- hexo-generator-feed</span><br><span class="line">- hexo-generator-sitemap</span><br><span class="line">#Feed Atom</span><br><span class="line">feed:</span><br><span class="line">  type: atom</span><br><span class="line">  path: atom.xml</span><br><span class="line">  limit: 20</span><br><span class="line">#sitemap</span><br><span class="line">sitemap:</span><br><span class="line">  path: sitemap.xml</span><br></pre></td></tr></table></figure>
+
+<p>再执行以下命令，部署服务端</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo d -g</span><br></pre></td></tr></table></figure>
+
+<h2 id="添加404页面"><a href="#添加404页面" class="headerlink" title="添加404页面"></a>添加404页面</h2><p>GitHub Pages有提供制作404页面的指引：<a href="https://help.github.com/articles/creating-a-custom-404-page-for-your-github-pages-site/" target="_blank" rel="noopener">Custom 404 Pages </a></p>
+<p>对于已绑定域名的网站，GitHub 默认调用其根目录下的 404.html 作为 404 页面。我们可以利用 Hexo 的新建页面功能。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo new page &quot;404&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后找到/source/404目录下的 index.md，在头部加入permalink: 404，部署后即可生效。（如不生效可用 permalink: 404.html）</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2017/04/02/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+]]></content>
+  </entry>
+</search>
