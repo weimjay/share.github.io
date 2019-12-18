@@ -765,7 +765,8 @@
         
           <p>我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。</p>
 <p>网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：</p>
-<p>Hexo分支 – 用来保存所有Hexo的源文件<br>master分支 – 用来保存Hexo生成的博客文件<br>在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。<br>Hexo的deploy指向master分支部署pages，git的管理指向Hexo分支。</p>
+<p>Hexo分支 – 用来保存所有Hexo的源文件<br>master分支 – 用来保存Hexo生成的博客文件</p>
+<p>在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。<br>Hexo的deploy指向master分支部署pages，git的管理指向Hexo分支。</p>
 <p>但是这里有一个巨大的问题，就是多分支的方案一定是让完整的Hexo源文件暴露在公开的仓库了。这对一些Hexo博客采用的leancloud阅读次数管理、多说评论等服务的私有secret key也暴露在公开仓库分支了。如果对这些配置的_config.yml进行单独管理的话，又不能在另一台电脑直接git pull同步，非常的麻烦。</p>
           <!--noindex-->
           <div class="post-button text-center">
