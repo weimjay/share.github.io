@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ajax跨域访问是一个老问题了，解决方法很多，比较常用的是JSONP方法，JSONP方法是一种非官方方法，而且这种方法只支持GET方式，不如POST方式安全。 即使使用jQuery的jsonp方法，type设为POST，也会自动变为GET。 官方问题说明： “script”: Evaluates the response as JavaScript and returns it as plain">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ajax跨域问题解决">
+<meta property="og:url" content="http://yoursite.com/2017/12/18/ajax跨域问题解决/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="ajax跨域访问是一个老问题了，解决方法很多，比较常用的是JSONP方法，JSONP方法是一种非官方方法，而且这种方法只支持GET方式，不如POST方式安全。 即使使用jQuery的jsonp方法，type设为POST，也会自动变为GET。 官方问题说明： “script”: Evaluates the response as JavaScript and returns it as plain">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-11-21T07:58:03.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ajax跨域问题解决">
+<meta name="twitter:description" content="ajax跨域访问是一个老问题了，解决方法很多，比较常用的是JSONP方法，JSONP方法是一种非官方方法，而且这种方法只支持GET方式，不如POST方式安全。 即使使用jQuery的jsonp方法，type设为POST，也会自动变为GET。 官方问题说明： “script”: Evaluates the response as JavaScript and returns it as plain">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/12/18/ajax跨域问题解决/">
+
+
+
+
+
+  <title>ajax跨域问题解决 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i class="fa fa-github logo-font-img" aria-hidden="true"></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/12/18/ajax跨域问题解决/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mickey">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ajax跨域问题解决</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-18T10:53:15+08:00">
+                2017-12-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>ajax跨域访问是一个老问题了，解决方法很多，比较常用的是JSONP方法，JSONP方法是一种非官方方法，而且这种方法只支持GET方式，不如POST方式安全。</p>
+<p>即使使用jQuery的jsonp方法，type设为POST，也会自动变为GET。</p>
+<p>官方问题说明：</p>
+<div class="note "><p>“script”: Evaluates the response as JavaScript and returns it as plain text. Disables caching by appending a query string parameter, “_=[TIMESTAMP]”, to the URL unless the cache option is set to true.Note: This will turn POSTs into GETs for remote-domain requests.</p></div>
+
+<p>如果跨域使用POST方式，可以使用创建一个隐藏的iframe来实现，与ajax上传图片原理一样，但这样会比较麻烦。</p>
+<a id="more"></a>
+
+<p>因此，通过设置Access-Control-Allow-Origin来实现跨域访问比较简单。</p>
+<p>例如：客户端的域名是<code>www.client.com</code>，而请求的域名是<code>www.server.com</code><br>如果直接使用ajax访问，会有以下错误</p>
+<div class="note danger"><p>XMLHttpRequest cannot load <a href="http://www.server.com/server.php" target="_blank" rel="noopener">http://www.server.com/server.php</a>. No ‘Access-Control-Allow-Origin’ header is present on the requested resource.Origin ‘<a href="http://www.client.com&#39;" target="_blank" rel="noopener">http://www.client.com&#39;</a> is therefore not allowed access.</p></div>
+
+<p>在被请求的Response header中加入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 指定允许其他域名访问  </span><br><span class="line">header(&apos;Access-Control-Allow-Origin:*&apos;);  </span><br><span class="line">// 响应类型  </span><br><span class="line">header(&apos;Access-Control-Allow-Methods:POST&apos;);  </span><br><span class="line">// 响应头设置  </span><br><span class="line">header(&apos;Access-Control-Allow-Headers:x-requested-with,content-type&apos;);  </span><br><span class="line">就可以实现ajax POST跨域访问了。</span><br></pre></td></tr></table></figure>
+
+<p>代码如下：<br>client.html 路径：<code>http://www.client.com/client.html</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0 Transitional//EN&quot;&gt;  </span><br><span class="line">&lt;html&gt;  </span><br><span class="line"> &lt;head&gt;  </span><br><span class="line">  &lt;meta http-equiv=&quot;content-type&quot; content=&quot;text/html;charset=utf-8&quot;&gt;  </span><br><span class="line">  &lt;title&gt; 跨域测试 &lt;/title&gt;  </span><br><span class="line">  &lt;script src=&quot;//code.jquery.com/jquery-1.11.3.min.js&quot;&gt;&lt;/script&gt;  </span><br><span class="line"> &lt;/head&gt;  </span><br><span class="line">  </span><br><span class="line"> &lt;body&gt;  </span><br><span class="line">    &lt;div id=&quot;show&quot;&gt;&lt;/div&gt;  </span><br><span class="line">    &lt;script type=&quot;text/javascript&quot;&gt;  </span><br><span class="line">    $.post(&quot;http://www.server.com/server.php&quot;,&#123;name:&quot;fdipzone&quot;,gender:&quot;male&quot;&#125;)  </span><br><span class="line">      .done(function(data)&#123;  </span><br><span class="line">        document.getElementById(&quot;show&quot;).innerHTML = data.name + &apos; &apos; + data.gender;  </span><br><span class="line">      &#125;);  </span><br><span class="line">    &lt;/script&gt;  </span><br><span class="line"> &lt;/body&gt;  </span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<p>server.php 路径：<code>http://www.server.com/server.php</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php  </span><br><span class="line">$ret = array(  </span><br><span class="line">    &apos;name&apos; =&gt; isset($_POST[&apos;name&apos;])? $_POST[&apos;name&apos;] : &apos;&apos;,  </span><br><span class="line">    &apos;gender&apos; =&gt; isset($_POST[&apos;gender&apos;])? $_POST[&apos;gender&apos;] : &apos;&apos;  </span><br><span class="line">);  </span><br><span class="line">  </span><br><span class="line">header(&apos;content-type:application:json;charset=utf8&apos;);  </span><br><span class="line">header(&apos;Access-Control-Allow-Origin:*&apos;);  </span><br><span class="line">header(&apos;Access-Control-Allow-Methods:POST&apos;);  </span><br><span class="line">header(&apos;Access-Control-Allow-Headers:x-requested-with,content-type&apos;);  </span><br><span class="line">  </span><br><span class="line">echo json_encode($ret);</span><br></pre></td></tr></table></figure>
+
+<p>Access-Control-Allow-Origin: * 表示允许任何域名跨域访问<br>如果需要指定某域名才允许跨域访问，只需把Access-Control-Allow-Origin: * 改为Access-Control-Allow-Origin: 允许的域名<br>例如：<code>header(&#39;Access-Control-Allow-Origin: http://www.client.com&#39;);</code></p>
+<p>如果需要设置多个域名允许访问，这里需要用php处理一下<br>例如允许 <code>www.client.com</code> 与 <code>www.client2.com</code> 可以跨域访问<br>server.php 修改为</p>
+<pre><code>&lt;?php  
+$ret = array(  
+    &apos;name&apos; =&gt; isset($_POST[&apos;name&apos;])? $_POST[&apos;name&apos;] : &apos;&apos;,  
+    &apos;gender&apos; =&gt; isset($_POST[&apos;gender&apos;])? $_POST[&apos;gender&apos;] : &apos;&apos;  
+);  
+
+header(&apos;content-type:application:json;charset=utf8&apos;);  
+
+$origin = isset($_SERVER[&apos;HTTP_ORIGIN&apos;])? $_SERVER[&apos;HTTP_ORIGIN&apos;] : &apos;&apos;;  
+
+$allow_origin = array(  
+    &apos;http://www.client.com&apos;,  
+    &apos;http://www.client2.com&apos;  
+);  
+
+if(in_array($origin, $allow_origin)){  
+    header(&apos;Access-Control-Allow-Origin:&apos;.$origin);  
+    header(&apos;Access-Control-Allow-Methods:POST&apos;);  
+    header(&apos;Access-Control-Allow-Headers:x-requested-with,content-type&apos;);  
+}  
+
+echo json_encode($ret);  
+</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/25/避免PHP-FPM内存泄漏导致内存耗尽/" rel="next" title="避免PHP-FPM内存泄漏导致内存耗尽">
+                <i class="fa fa-chevron-left"></i> 避免PHP-FPM内存泄漏导致内存耗尽
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/17/Nginx下使Thinkphp-URL模式支持PATHINFO和REWRITE/" rel="prev" title="Nginx下使Thinkphp URL模式支持PATHINFO和REWRITE">
+                Nginx下使Thinkphp URL模式支持PATHINFO和REWRITE <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Mickey</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mickey</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+<span class="post-meta-divider">|</span>
+
+<div class="theme-info icp">
+<span>粤ICP备18125374号</span>
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="为什么选择GitHub Pages？ 1、github pages有300M免费空间，资料自己管理，保存可靠； 2、可定制性极强，可以结合Hexo框架搭建静态博客，不需要数据库，访问速度快； 3、github是世界上最大的技术分享网站，使用它能让我们眼界更加开阔。  如何搭建静态博客？大概可以分为以下几个步骤  1.搭建环境准备（包括node.js和git环境，github账户的配置）2.Hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Github + Hexo 搭建静态博客">
+<meta property="og:url" content="http://yoursite.com/2017/04/02/Github + Hexo/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="为什么选择GitHub Pages？ 1、github pages有300M免费空间，资料自己管理，保存可靠； 2、可定制性极强，可以结合Hexo框架搭建静态博客，不需要数据库，访问速度快； 3、github是世界上最大的技术分享网站，使用它能让我们眼界更加开阔。  如何搭建静态博客？大概可以分为以下几个步骤  1.搭建环境准备（包括node.js和git环境，github账户的配置）2.Hexo">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/9fe4afa0gw1faljiuibwdj20it0cb3zd.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/9fe4afa0gw1faljmop0mbj20dz0atwhi.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/9fe4afa0gw1faljp87tpkj20it0cbdgo.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/9fe4afa0gw1faljww56v8j20ci0a975c.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/9fe4afa0gw1faljv7hoqhj20p40fz0vo.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/9fe4afa0gw1falkb6ao3oj2064032a9x.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/large/9fe4afa0gw1falkcr5z7kj20ce074aav.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/9fe4afa0gw1falkf052h7j205r06f0su.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/large/9fe4afa0gw1falkiaws1xj208p045t9j.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/large/9fe4afa0gw1falkk5mnsvj211y0lcten.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/9fe4afa0jw1famro8k282j20d3026jrq.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/large/9fe4afa0gw1fammrmpcbfj20as02eaad.jpg">
+<meta property="og:image" content="http://wx3.sinaimg.cn/large/0069Q0Vtgy1fe9kd1dw1uj30qx0bwq36.jpg">
+<meta property="og:image" content="http://wx3.sinaimg.cn/large/0069Q0Vtly1fe9k971ohgj30fk02qdfq.jpg">
+<meta property="og:updated_time" content="2017-04-02T01:57:37.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Github + Hexo 搭建静态博客">
+<meta name="twitter:description" content="为什么选择GitHub Pages？ 1、github pages有300M免费空间，资料自己管理，保存可靠； 2、可定制性极强，可以结合Hexo框架搭建静态博客，不需要数据库，访问速度快； 3、github是世界上最大的技术分享网站，使用它能让我们眼界更加开阔。  如何搭建静态博客？大概可以分为以下几个步骤  1.搭建环境准备（包括node.js和git环境，github账户的配置）2.Hexo">
+<meta name="twitter:image" content="http://ww4.sinaimg.cn/large/9fe4afa0gw1faljiuibwdj20it0cb3zd.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/04/02/Github + Hexo/">
+
+
+
+
+
+  <title>Github + Hexo 搭建静态博客 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i class="fa fa-github logo-font-img" aria-hidden="true"></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/02/Github + Hexo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mickey">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Github + Hexo 搭建静态博客</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-02T09:57:37+08:00">
+                2017-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="为什么选择GitHub-Pages？"><a href="#为什么选择GitHub-Pages？" class="headerlink" title="为什么选择GitHub Pages？"></a>为什么选择GitHub Pages？</h2><ul>
+<li>1、github pages有300M免费空间，资料自己管理，保存可靠；</li>
+<li>2、可定制性极强，可以结合Hexo框架搭建静态博客，不需要数据库，访问速度快；</li>
+<li>3、github是世界上最大的技术分享网站，使用它能让我们眼界更加开阔。</li>
+</ul>
+<h2 id="如何搭建静态博客？"><a href="#如何搭建静态博客？" class="headerlink" title="如何搭建静态博客？"></a>如何搭建静态博客？</h2><p>大概可以分为以下几个步骤</p>
+<blockquote>
+<p>1.搭建环境准备（包括node.js和git环境，github账户的配置）<br>2.Hexo的安装与配置<br>3.在Github Pages上部署Hexo框架<br>4.发布文章<br>5.主题NexT的简单配置<br>6.添加feed和sitemap插件<br>7.添加404公益页面</p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="搭建环境准备"><a href="#搭建环境准备" class="headerlink" title="搭建环境准备"></a>搭建环境准备</h2><p>大概可以分为以下三步 </p>
+<ul>
+<li>Node.js 的安装和准备 </li>
+<li>Git的安装和准备 </li>
+<li>gitHub账户的配置</li>
+</ul>
+<h3 id="配置Node-js环境"><a href="#配置Node-js环境" class="headerlink" title="配置Node.js环境"></a>配置Node.js环境</h3><p>下载安装Node.js：<br><a href="https://nodejs.org" target="_blank" rel="noopener">https://nodejs.org</a></p>
+<p>所有设置保持默认即可，安装完成后，检查是否安装正确，打开cmd命令行窗口，输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
+
+<p>如果结果如下图所示，则说明安装正确，可以进行下一步了，如果不正确，则需要回头检查自己的安装过程。<br><img src="http://ww4.sinaimg.cn/large/9fe4afa0gw1faljiuibwdj20it0cb3zd.jpg" alt></p>
+<h3 id="配置Git环境"><a href="#配置Git环境" class="headerlink" title="配置Git环境"></a>配置Git环境</h3><p>下载安装Git：<br><a href="https://git-scm.com/downloads" target="_blank" rel="noopener">https://git-scm.com/downloads</a></p>
+<p>和Node.js一样，大部分设置都只需要保持默认，但是出于我们操作方便考虑，建议PATH选项按照下图选择：<br>Git PATH设置<br><img src="http://ww4.sinaimg.cn/large/9fe4afa0gw1faljmop0mbj20dz0atwhi.jpg" alt></p>
+<p>一样的，我们来检查一下Git是不是安装正确了，打开命令行，输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git --version</span><br></pre></td></tr></table></figure>
+
+<p>如果结果如下图所示，则说明安装正确，可以进行下一步了，如果不正确，则需要回头检查自己的安装过程。<br><img src="http://ww2.sinaimg.cn/large/9fe4afa0gw1faljp87tpkj20it0cbdgo.jpg" alt></p>
+<h3 id="github账户的注册和配置"><a href="#github账户的注册和配置" class="headerlink" title="github账户的注册和配置"></a>github账户的注册和配置</h3><p>如果已经拥有账号，请跳过此步~</p>
+<p>1.Github注册：<a href="https://github.com/" target="_blank" rel="noopener">https://github.com/</a></p>
+<p>2.创建代码库<br>登陆之后，点击页面右上角的加号，选择New repository：<br><img src="http://ww2.sinaimg.cn/large/9fe4afa0gw1faljww56v8j20ci0a975c.jpg" alt></p>
+<p>进入到代码库创建页面，在Repository name下填写yourname.github.io，Description (optional)下填写一些简单的描述（可选），如图所示：<br><img src="http://ww4.sinaimg.cn/large/9fe4afa0gw1faljv7hoqhj20p40fz0vo.jpg" alt></p>
+<p>3.代码库设置<br>接下来开启Github pages功能，点击界面右侧的Settings，找到GitHub Pages，Source选择master branch，并保存。此时，如果配置正确，<a href="https://yourname.github.io" target="_blank" rel="noopener">https://yourname.github.io</a> 这个网址就可以正常访问了。</p>
+<h2 id="安装Hexo"><a href="#安装Hexo" class="headerlink" title="安装Hexo"></a>安装Hexo</h2><p>在自己认为合适的地方创建一个文件夹，这里我以E:\hexo 为例子讲解，首先在E盘目录下创建Hexo文件夹，并在命令行的窗口进入到该目录<br><img src="http://ww4.sinaimg.cn/large/9fe4afa0gw1falkb6ao3oj2064032a9x.jpg" alt></p>
+<p>在命令行中输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br></pre></td></tr></table></figure>
+
+<p>然后你将会看到：<br><img src="http://ww3.sinaimg.cn/large/9fe4afa0gw1falkcr5z7kj20ce074aav.jpg" alt></p>
+<p>可能你会看到一个WARN，但是不用担心，这不会影响你的正常使用。 然后输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo --save</span><br></pre></td></tr></table></figure>
+
+<p>等待hexo安装完成之后，输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+
+<p>如果你看到了如图文字，则说明已经安装成功了。<br><img src="http://ww2.sinaimg.cn/large/9fe4afa0gw1falkf052h7j205r06f0su.jpg" alt></p>
+<h2 id="Hexo的相关配置"><a href="#Hexo的相关配置" class="headerlink" title="Hexo的相关配置"></a>Hexo的相关配置</h2><p>1.初始化Hexo<br>接着上面的操作，输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init</span><br></pre></td></tr></table></figure>
+
+<p>然后输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure>
+
+<p>之后npm将会自动安装你需要的组件，只需要等待npm操作即可。<br>2.首次体验Hexo<br>继续操作，同样是在命令行中，输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww3.sinaimg.cn/large/9fe4afa0gw1falkiaws1xj208p045t9j.jpg" alt><br>然后输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<p>然后会提示：</p>
+<blockquote>
+<p>INFO   Hexo is running at <a href="http://localhost:4000/" target="_blank" rel="noopener">http://localhost:4000/</a>. Press Ctrl+C to stop.</p>
+</blockquote>
+<p>在浏览器中打开<a href="http://localhost:4000/，你将会看到：" target="_blank" rel="noopener">http://localhost:4000/，你将会看到：</a><br><img src="http://ww4.sinaimg.cn/large/9fe4afa0gw1falkk5mnsvj211y0lcten.jpg" alt></p>
+<p>到目前为止，Hexo在本地的配置已经全都结束了，下面会讲解如何Github pages上部署Hexo。</p>
+<h2 id="在Github-Pages上部署Hexo"><a href="#在Github-Pages上部署Hexo" class="headerlink" title="在Github Pages上部署Hexo"></a>在Github Pages上部署Hexo</h2><h3 id="配置Git个人信息"><a href="#配置Git个人信息" class="headerlink" title="配置Git个人信息"></a>配置Git个人信息</h3><p>1、设置Git的user name和email：(如果是第一次的话)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name &quot;yourname&quot;</span><br><span class="line">git config --global user.email &quot;yourname@gmail.com&quot;</span><br></pre></td></tr></table></figure>
+
+<p>检查是否已经有SSH Key</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.ssh</span><br></pre></td></tr></table></figure>
+
+<p>接着输入ls命令，列出该文件下的文件，看是否存在 id_isa 和 id_isa.pub 文件（也可以是别的文件名，只要 yourName 和 yourName.pub 承兑存在），如果有，证明已经存在 ssh key了，可以直接跳过生成密钥这一步骤。<br>下图是已经存在ssh key的情况：<br><img src="http://ww2.sinaimg.cn/large/9fe4afa0jw1famro8k282j20d3026jrq.jpg" alt></p>
+<p>2、生成密钥</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C &quot;yourname@gmail.com&quot;</span><br></pre></td></tr></table></figure>
+
+<p>如果不需要密码的话，连续3个回车。<br>最后生成了两个文件：id_rsa和id_rsa.pub，存储路径是C:\Users\Administrator.ssh</p>
+<p>3、添加密钥到ssh-agent<br>确保 ssh-agent 是可用的。ssh-agent是一种控制用来保存公钥身份验证所使用的私钥的程序，其实ssh-agent就是一个密钥管理器，运行ssh-agent以后，使用ssh-add将私钥交给ssh-agent保管，其他程序需要身份验证的时候可以将验证申请交给ssh-agent来完成整个认证过程。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># start the ssh-agent in the background</span><br><span class="line">eval &quot;$(ssh-agent -s)&quot;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww3.sinaimg.cn/large/9fe4afa0gw1fammrmpcbfj20as02eaad.jpg" alt><br>添加生成的 SSH key 到 ssh-agent</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add ~/.ssh/id_rsa</span><br></pre></td></tr></table></figure>
+
+<p>4、登陆Github, 添加ssh<br>Settings-&gt;Deploy keys-&gt;Add deploy key<br>Title名称自定义，把id_rsa.pub文件里的内容复制到Key里面，勾选Allow write access，保存：<br><img src="http://wx3.sinaimg.cn/large/0069Q0Vtgy1fe9kd1dw1uj30qx0bwq36.jpg" alt></p>
+<p>5、测试ssh连接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
+<p>下图表示连接成功<br><img src="http://wx3.sinaimg.cn/large/0069Q0Vtly1fe9k971ohgj30fk02qdfq.jpg" alt></p>
+<h3 id="配置Deployment"><a href="#配置Deployment" class="headerlink" title="配置Deployment"></a>配置Deployment</h3><p>在根目录的_config.yml文件中，找到Deployment，然后按照如下修改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: git@github.com:yourname/yourname.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+
+<h2 id="发布文章"><a href="#发布文章" class="headerlink" title="发布文章"></a>发布文章</h2><p>需要先安装一个扩展：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
+
+<p>新建一篇文章，执行下面的命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new post &quot;article title&quot;</span><br></pre></td></tr></table></figure>
+
+<p>这时候在我的电脑的目录下 E:\hexo\source_posts 将会看到 article title.md 文件<br>用MarDown编辑器打开就可以编辑文章了。文章编辑好之后，运行生成、部署命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo g   // 生成</span><br><span class="line">hexo d   // 部署</span><br></pre></td></tr></table></figure>
+
+<p>当然你也可以执行下面的命令，相当于上面两条命令的效果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo d -g #在部署前先生成</span><br></pre></td></tr></table></figure>
+
+<p>注意：如果出现下面这样的错误</p>
+<blockquote>
+<p>Permission denied (publickey).<br>fatal: Could not read from remote repository.<br>Please make sure you have the correct access rights<br>and the repository exists.</p>
+</blockquote>
+<p>则是因为没有设置好public key所致。<br>在本机生成public key，不懂的可以参考<a href>Git ssh 配置及使用</a></p>
+<h2 id="主题推荐"><a href="#主题推荐" class="headerlink" title="主题推荐"></a>主题推荐</h2><p><strong>NexT</strong><br>目前Github上Star最高的Hexo主题，支持几种不同的风格。<br>作者提供了非常完善的配置说明：<br><a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">http://theme-next.iissnan.com/getting-started.html</a></p>
+<h2 id="添加插件"><a href="#添加插件" class="headerlink" title="添加插件"></a>添加插件</h2><p>添加feed和sitemap插件<br>切换到你本地的hexo目录，在命令行窗口，输入以下命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-generator-feed -save</span><br><span class="line">npm install hexo-generator-sitemap -save</span><br></pre></td></tr></table></figure>
+
+<p>修改_config.yml，增加以下内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"># Extensions</span><br><span class="line">Plugins:</span><br><span class="line">- hexo-generator-feed</span><br><span class="line">- hexo-generator-sitemap</span><br><span class="line">#Feed Atom</span><br><span class="line">feed:</span><br><span class="line">  type: atom</span><br><span class="line">  path: atom.xml</span><br><span class="line">  limit: 20</span><br><span class="line">#sitemap</span><br><span class="line">sitemap:</span><br><span class="line">  path: sitemap.xml</span><br></pre></td></tr></table></figure>
+
+<p>再执行以下命令，部署服务端</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo d -g</span><br></pre></td></tr></table></figure>
+
+<h2 id="添加404页面"><a href="#添加404页面" class="headerlink" title="添加404页面"></a>添加404页面</h2><p>GitHub Pages有提供制作404页面的指引：<a href="https://help.github.com/articles/creating-a-custom-404-page-for-your-github-pages-site/" target="_blank" rel="noopener">Custom 404 Pages </a></p>
+<p>对于已绑定域名的网站，GitHub 默认调用其根目录下的 404.html 作为 404 页面。我们可以利用 Hexo 的新建页面功能。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo new page &quot;404&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后找到/source/404目录下的 index.md，在头部加入permalink: 404，部署后即可生效。（如不生效可用 permalink: 404.html）</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/02/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/02/Markdown/" rel="prev" title="Markdown语法详解">
+                Markdown语法详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Mickey</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么选择GitHub-Pages？"><span class="nav-number">1.</span> <span class="nav-text">为什么选择GitHub Pages？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何搭建静态博客？"><span class="nav-number">2.</span> <span class="nav-text">如何搭建静态博客？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建环境准备"><span class="nav-number">3.</span> <span class="nav-text">搭建环境准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置Node-js环境"><span class="nav-number">3.1.</span> <span class="nav-text">配置Node.js环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置Git环境"><span class="nav-number">3.2.</span> <span class="nav-text">配置Git环境</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#github账户的注册和配置"><span class="nav-number">3.3.</span> <span class="nav-text">github账户的注册和配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Hexo"><span class="nav-number">4.</span> <span class="nav-text">安装Hexo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo的相关配置"><span class="nav-number">5.</span> <span class="nav-text">Hexo的相关配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在Github-Pages上部署Hexo"><span class="nav-number">6.</span> <span class="nav-text">在Github Pages上部署Hexo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置Git个人信息"><span class="nav-number">6.1.</span> <span class="nav-text">配置Git个人信息</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置Deployment"><span class="nav-number">6.2.</span> <span class="nav-text">配置Deployment</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发布文章"><span class="nav-number">7.</span> <span class="nav-text">发布文章</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主题推荐"><span class="nav-number">8.</span> <span class="nav-text">主题推荐</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加插件"><span class="nav-number">9.</span> <span class="nav-text">添加插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加404页面"><span class="nav-number">10.</span> <span class="nav-text">添加404页面</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mickey</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+<span class="post-meta-divider">|</span>
+
+<div class="theme-info icp">
+<span>粤ICP备18125374号</span>
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

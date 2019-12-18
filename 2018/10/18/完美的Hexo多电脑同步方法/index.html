@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支： Hexo分支 – 用来保存所有Hexo的源文件master分支 – 用来保存Hexo生成的博客文件在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy指向ma">
+<meta property="og:type" content="article">
+<meta property="og:title" content="完美的Hexo多电脑同步方法">
+<meta property="og:url" content="http://yoursite.com/2018/10/18/完美的Hexo多电脑同步方法/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支： Hexo分支 – 用来保存所有Hexo的源文件master分支 – 用来保存Hexo生成的博客文件在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy指向ma">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-12-18T03:20:37.794Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="完美的Hexo多电脑同步方法">
+<meta name="twitter:description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支： Hexo分支 – 用来保存所有Hexo的源文件master分支 – 用来保存Hexo生成的博客文件在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy指向ma">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/10/18/完美的Hexo多电脑同步方法/">
+
+
+
+
+
+  <title>完美的Hexo多电脑同步方法 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i class="fa fa-github logo-font-img" aria-hidden="true"></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/18/完美的Hexo多电脑同步方法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mickey">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">完美的Hexo多电脑同步方法</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-18T09:56:08+08:00">
+                2018-10-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Hexo/" itemprop="url" rel="index">
+                    <span itemprop="name">Hexo</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。</p>
+<p>网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：</p>
+<p>Hexo分支 – 用来保存所有Hexo的源文件<br>master分支 – 用来保存Hexo生成的博客文件<br>在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。<br>Hexo的deploy指向master分支部署pages，git的管理指向Hexo分支。</p>
+<p>但是这里有一个巨大的问题，就是多分支的方案一定是让完整的Hexo源文件暴露在公开的仓库了。这对一些Hexo博客采用的leancloud阅读次数管理、多说评论等服务的私有secret key也暴露在公开仓库分支了。如果对这些配置的_config.yml进行单独管理的话，又不能在另一台电脑直接git pull同步，非常的麻烦。</p>
+<a id="more"></a>
+
+<p>所以Hexo最完美的多电脑同步方法是，创建两个仓库：</p>
+<p>Hexo私有仓库 – 用来保存所有Hexo的源文件<br>master公开仓库 – 用来保存Hexo生成的博客文件<br>下面来具体讲讲实现方法。</p>
+<h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>这里假设读者已经搭建好了Hexo的博客系统，实现了：</p>
+<ol>
+<li>使用hexo d -g部署博客</li>
+<li>实现了发布hexo到github pages</li>
+<li>自定义了next等第三方主题</li>
+</ol>
+<h1 id="Let’s-go"><a href="#Let’s-go" class="headerlink" title="Let’s go!"></a>Let’s go!</h1><h2 id="创建私有仓库"><a href="#创建私有仓库" class="headerlink" title="创建私有仓库"></a>创建私有仓库</h2><p>注册一个Coding账号，然后创建一个私有项目，名称为hexo</p>
+<h2 id="建立本地git仓库"><a href="#建立本地git仓库" class="headerlink" title="建立本地git仓库"></a>建立本地git仓库</h2><p>进入你现有的Hexo文件夹，删除第三方主题的git配置，如对next主题</p>
+<pre>rm -fr ./themes/next/.git/</pre>
+
+<p>然后建立本地的git仓库</p>
+<pre>git init</pre>
+
+<p>创建一个.gitignore文件，并放在Hexo的根目录，内容为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.DS_Store</span><br><span class="line">Thumbs.db</span><br><span class="line">db.json</span><br><span class="line">*.log</span><br><span class="line">node_modules/</span><br><span class="line">public/</span><br><span class="line">.deploy*/</span><br></pre></td></tr></table></figure>
+
+<h2 id="push到私有仓库"><a href="#push到私有仓库" class="headerlink" title="push到私有仓库"></a>push到私有仓库</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin https://git.coding.net/&lt;yourname&gt;/hexo.git</span><br><span class="line">git add .</span><br><span class="line">git commit -m &quot;my first private hexo&quot;</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+
+<p>这样，就完成了本地Hexo源码的全备份</p>
+<p>#在另一台电脑进行Hexo写作<br>上面已经完成了Hexo的全备份，那么如果在另一台电脑进行Hexo编辑呢。<br>当然首先你也要完成node/npm/hexo/git等环境的搭建和配置。</p>
+<h2 id="Hexo拉取"><a href="#Hexo拉取" class="headerlink" title="Hexo拉取"></a>Hexo拉取</h2><pre>git clone https://git.coding.net/<yourname>/hexo.git</yourname></pre>
+<p>这样你就拥有了你的所有Hexo源文件</p>
+<h2 id="Hexo文章编写和发布"><a href="#Hexo文章编写和发布" class="headerlink" title="Hexo文章编写和发布"></a>Hexo文章编写和发布</h2><p>尽管拉取下来了，还需要建立一下Hexo的环境，这里需要格外注意的一点是：<br>千万不要用hexo init命令。原因是当前目录已经建立了git仓库环境, <code>hexo init</code>会覆盖到当前的git环境，重建一个新的，这样和我们的私有Hexo源码仓库脱离了联系。</p>
+<p>正确的做法是：</p>
+<pre>npm install</pre>
+<p>因为<code>package.jso</code>里面已经保存了hexo的必备资源包信息，<code>npm install</code>后Hexo环境就建立起来了。</p>
+<p>接下来就进行正常的编写和发布就好。<br>本地预览的命令还是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<p>Hexo的发布命令是<code>hexo d</code>。</p>
+<p>最后执行<code>git status</code>把更改的新文件<code>git add</code>和<code>git commit</code>，最后<code>git push</code>到私有仓库，又会完成Hexo源码仓库的同步。</p>
+<h2 id="Hexo仓库更新"><a href="#Hexo仓库更新" class="headerlink" title="Hexo仓库更新"></a>Hexo仓库更新</h2><p>下次进行Hexo仓库拉取时执行：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git fetch --all #将git上所有文件拉取到本地</span><br><span class="line">git reset --hard origin/master  #强制将本地内容指向刚刚同步git云端内容</span><br></pre></td></tr></table></figure>
+
+<p>至此，我们就实现了在多台电脑自由发布文章。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/17/Nginx下使Thinkphp-URL模式支持PATHINFO和REWRITE/" rel="next" title="Nginx下使Thinkphp URL模式支持PATHINFO和REWRITE">
+                <i class="fa fa-chevron-left"></i> Nginx下使Thinkphp URL模式支持PATHINFO和REWRITE
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/10/Centos7搭建Go开发环境/" rel="prev" title="Centos7搭建Go开发环境">
+                Centos7搭建Go开发环境 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Mickey</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Let’s-go"><span class="nav-number">2.</span> <span class="nav-text">Let’s go!</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建私有仓库"><span class="nav-number">2.1.</span> <span class="nav-text">创建私有仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建立本地git仓库"><span class="nav-number">2.2.</span> <span class="nav-text">建立本地git仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#push到私有仓库"><span class="nav-number">2.3.</span> <span class="nav-text">push到私有仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo拉取"><span class="nav-number">2.4.</span> <span class="nav-text">Hexo拉取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo文章编写和发布"><span class="nav-number">2.5.</span> <span class="nav-text">Hexo文章编写和发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo仓库更新"><span class="nav-number">2.6.</span> <span class="nav-text">Hexo仓库更新</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mickey</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+<span class="post-meta-divider">|</span>
+
+<div class="theme-info icp">
+<span>粤ICP备18125374号</span>
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

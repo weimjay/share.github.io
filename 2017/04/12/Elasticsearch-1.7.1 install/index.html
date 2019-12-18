@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Elasticsearch,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="1、首先下载最新的elasticsearch安装版本，以下为官网下载地址： https://www.elastic.co/downloads/elasticsearch 下载完成后，解压缩在安装目录。">
+<meta name="keywords" content="Elasticsearch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Elasticsearch-1.7.1 Windows版本安装">
+<meta property="og:url" content="http://yoursite.com/2017/04/12/Elasticsearch-1.7.1 install/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1、首先下载最新的elasticsearch安装版本，以下为官网下载地址： https://www.elastic.co/downloads/elasticsearch 下载完成后，解压缩在安装目录。">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cDovL3MxNi5zaW5haW1nLmNuL213NjkwLzAwNjlRMFZ0Z3k2VU80SU1WQTNkZg?x-oss-process=image/format,png">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cDovL3MyLnNpbmFpbWcuY24vbXc2OTAvMDA2OVEwVnRneTZVTzVFcXdzOWUx?x-oss-process=image/format,png">
+<meta property="og:updated_time" content="2019-12-18T03:24:56.368Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Elasticsearch-1.7.1 Windows版本安装">
+<meta name="twitter:description" content="1、首先下载最新的elasticsearch安装版本，以下为官网下载地址： https://www.elastic.co/downloads/elasticsearch 下载完成后，解压缩在安装目录。">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cDovL3MxNi5zaW5haW1nLmNuL213NjkwLzAwNjlRMFZ0Z3k2VU80SU1WQTNkZg?x-oss-process=image/format,png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/04/12/Elasticsearch-1.7.1 install/">
+
+
+
+
+
+  <title>Elasticsearch-1.7.1 Windows版本安装 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i class="fa fa-github logo-font-img" aria-hidden="true"></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/04/12/Elasticsearch-1.7.1 install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mickey">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Elasticsearch-1.7.1 Windows版本安装</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-12T10:36:06+08:00">
+                2017-04-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>1、首先下载最新的elasticsearch安装版本，以下为官网下载地址：</p>
+<p><a href="https://www.elastic.co/downloads/elasticsearch" target="_blank" rel="noopener">https://www.elastic.co/downloads/elasticsearch</a></p>
+<p>下载完成后，解压缩在安装目录。</p>
+<a id="more"></a>
+
+<p>​2、安装JAVA环境</p>
+<p>​<a href="http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html" target="_blank" rel="noopener">http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html</a></p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3MxNi5zaW5haW1nLmNuL213NjkwLzAwNjlRMFZ0Z3k2VU80SU1WQTNkZg?x-oss-process=image/format,png" alt="﻿Java SE下载"></p>
+<p>选择合适的版本下载安装，然后配置环境变量。</p>
+<p>(1)新建名为classpath的变量名，变量值为</p>
+<p>.;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar</p>
+<p>(2)新建名为JAVA_HOME的变量名，变量值为之前安装jdk的目录，例如D:\Java\jdk1.7.0_79</p>
+<p>(3)在已有的系统变量path的变量值加上</p>
+<p>;%JAVA_HOME%\bin;%JAVA_HOME%\jre\bin</p>
+<p>自此配置完成，运行cmd命令，输入java回车​，出现以下结果表示配置成功。​</p>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3MyLnNpbmFpbWcuY24vbXc2OTAvMDA2OVEwVnRneTZVTzVFcXdzOWUx?x-oss-process=image/format,png" alt="﻿"></p>
+<p>3、运行-&gt;cmd，进入elasticsearch安装目录，再进入bin目录，运行elasticsearch.bat：</p>
+<p>启动成功后，在浏览器中输入:<a href="http://localhost:9200/" target="_blank" rel="noopener">http://localhost:9200/</a></p>
+<p>{</p>
+<p>  “status” : 200,</p>
+<p>  “name” : “Living Mummy”,</p>
+<p>  “cluster_name” : “elasticsearch”,</p>
+<p>  “version” : {</p>
+<pre><code>&quot;number&quot; : &quot;1.7.1&quot;,
+
+&quot;build_hash&quot; : &quot;b88f43fc40b0bcd7f173a1f9ee2e97816de80b19&quot;,
+
+&quot;build_timestamp&quot; : &quot;2015-07-29T09:54:16Z&quot;,
+
+&quot;build_snapshot&quot; : false,
+
+&quot;lucene_version&quot; : &quot;4.10.4&quot;</code></pre><p>  },</p>
+<p>  “tagline” : “You Know, for Search”</p>
+<p>}</p>
+<p>表示安装成功了。​</p>
+<p>4、将elasticsearch安装成系统服务​</p>
+<p>(1). 在Linux上运行系统服务</p>
+<p>如果是从提供的二进制包安装的Elasticsearch，你已经完成了，什么都不用担心。但是，如果你刚刚下载归档文件，解压到所选择的目录，就需要做一些额外的工作。为了将Elasticsearch安装成一个Linux系统服务，将使用Elasticsearch service wrapper，你可以从<a href="https://github.com/" target="_blank" rel="noopener">https://github.com/</a> elasticsearch/elasticsearch-servicewrapper下载。</p>
+<p>来看看使用Elasticsearch service wrapper建立Elasticsearch Linux服务的步骤。首先，执行以下命令来下载这个wrapper：</p>
+<p>curl -L <a href="http://github.com/elasticsearch/elasticsearch-" target="_blank" rel="noopener">http://github.com/elasticsearch/elasticsearch-</a></p>
+<p>servicewrapper/tarball/master</p>
+<p>tar -xz</p>
+<p>假设Elasticsearch已经安装在/usr/local/share/elasticsearch下，执行如下命令来移动所需的wrapper文件：</p>
+<p>sudo mv <em>servicewrapper</em>/service/usr/local/share/elasticsearch/bin/</p>
+<p>执行如下命令来移除剩余的文件</p>
+<p>rm -Rf <em>servicewrapper</em></p>
+<p>最后，通过执行install命令来安装服务：</p>
+<p>sudo /usr/local/share/elasticsearch/bin/service/elasticsearch install</p>
+<p>在这之后，需要创建一个符号链接指向/usr/local/bin/rcelasticsearch下的/usr/local/share/elasticsearch/bin/service/elasticsearch脚本。可通过运行如下命令来实现：</p>
+<p>sudo ln -s ‘readlink -f</p>
+<p>/usr/local/share/elasticsearch/bin/service/elasticsearch’</p>
+<p>/usr/local/bin/rcelasticsearch</p>
+<p>就这样。如果你想启动Elasticsearch，执行如下命令：</p>
+<p>/etc/init.d/elasticsearch start</p>
+<p>(2). 在Windows上运行系统服务</p>
+<p>在Windows下把Elasticsearch安装为系统服务非常容易，你只需转到Elasticsearch的安装目录，到bin子目录下，执行:</p>
+<p>service.bat install</p>
+<p>你会被问及操作权限，允许脚本运行，Elasticsearch就被安装成一个Windows服务。</p>
+<p>如果你想看看所有被service.bat脚本文件暴露出来的命令，在相同目录下执行：</p>
+<p>service.bat</p>
+<p>例如，为了启动Elasticsearch，可执行如下命令：</p>
+<p>service.bat start</p>
+<hr>
+<p>elasticsearch插件elasticsearch-head安装：</p>
+<p>elasticsearch-head是一个elasticsearch的集群管理工具，它是完全由html5编写的独立网页程序，你可以通过插件把它集成到es。</p>
+<p>在cmd命令行中进入安装目录，再进入 bin目录，运行以下命令：</p>
+<p>plugin -install mobz/elasticsearch-head</p>
+<p>然后安装成功后，\plugins目录下会有head的文件夹。在浏览器中输入:<a href="http://localhost:9200/_plugin/head/，可以看到效果。" target="_blank" rel="noopener">http://localhost:9200/_plugin/head/，可以看到效果。</a></p>
+<p>elasticsearch插件bigdesk安装：</p>
+<p>bigdesk是elasticsearch的一个集群监控工具，可以通过它来查看es集群的各种状态，如：cpu、内存使用情况，索引数据、搜索情况，http连接数等。</p>
+<p>在cmd命令行中进入安装目录，再进入 bin目录，运行以下命令：</p>
+<p>plugin -install lukas-vlcek/bigdesk</p>
+<p>然后安装成功后，在浏览器中输入:<a href="http://localhost:9200/_plugin/bigdesk/，可以看到效果。" target="_blank" rel="noopener">http://localhost:9200/_plugin/bigdesk/，可以看到效果。</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Elasticsearch/" rel="tag"># Elasticsearch</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/10/Apache局域网内ip配置/" rel="next" title="Apache局域网内ip配置">
+                <i class="fa fa-chevron-left"></i> Apache局域网内ip配置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/08/使用Linux的Crontab定时执行PHP脚本/" rel="prev" title="使用Linux的Crontab定时执行PHP脚本">
+                使用Linux的Crontab定时执行PHP脚本 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Mickey</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mickey</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+<span class="post-meta-divider">|</span>
+
+<div class="theme-info icp">
+<span>粤ICP备18125374号</span>
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

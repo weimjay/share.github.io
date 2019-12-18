@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="PHP,Redis,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="phpredis是php的一个扩展，效率非常高，有链表排序功能，对创建内存级的模块业务关系很有用。 以下是redis官方提供的命令使用技巧: 下载地址如下： https://github.com/owlient/phpredis（支持redis 2.0.4） Redis::__construct构造函数$redis = new Redis();">
+<meta name="keywords" content="PHP,Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="php-redis中文文档">
+<meta property="og:url" content="http://yoursite.com/2017/09/30/php-redis中文文档/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="phpredis是php的一个扩展，效率非常高，有链表排序功能，对创建内存级的模块业务关系很有用。 以下是redis官方提供的命令使用技巧: 下载地址如下： https://github.com/owlient/phpredis（支持redis 2.0.4） Redis::__construct构造函数$redis = new Redis();">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-12-18T03:22:53.881Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="php-redis中文文档">
+<meta name="twitter:description" content="phpredis是php的一个扩展，效率非常高，有链表排序功能，对创建内存级的模块业务关系很有用。 以下是redis官方提供的命令使用技巧: 下载地址如下： https://github.com/owlient/phpredis（支持redis 2.0.4） Redis::__construct构造函数$redis = new Redis();">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/09/30/php-redis中文文档/">
+
+
+
+
+
+  <title>php-redis中文文档 | Hexo</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i class="fa fa-github logo-font-img" aria-hidden="true"></i></span>
+        <span class="site-title">Hexo</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/09/30/php-redis中文文档/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Mickey">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">php-redis中文文档</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-09-30T15:50:42+08:00">
+                2017-09-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>phpredis是php的一个扩展，效率非常高，有链表排序功能，对创建内存级的模块业务关系很有用。</p>
+<p>以下是redis官方提供的命令使用技巧:</p>
+<p>下载地址如下：</p>
+<p><a href="https://github.com/owlient/phpredis（支持redis" target="_blank" rel="noopener">https://github.com/owlient/phpredis（支持redis</a> 2.0.4）</p>
+<p>Redis::__construct构造函数<br>$redis = new Redis();</p>
+<a id="more"></a>
+
+<p>connect, open 链接redis服务<br>参数<br>host: string，服务地址<br>port: int,端口号<br>timeout: float,链接时长 (可选, 默认为 0 ，不限链接时间)<br>注: 在redis.conf中也有时间，默认为300</p>
+<p>pconnect, popen 不会主动关闭的链接</p>
+<p>setOption 设置redis模式</p>
+<p>getOption 查看redis设置的模式</p>
+<p>ping 查看连接状态</p>
+<p>get 得到某个key的值（string值）<br>如果该key不存在，return false</p>
+<p>set 写入key 和 value（string值）<br>如果写入成功，return ture</p>
+<p>setex 带生存时间的写入值<br>$redis-&gt;setex(‘key’, 3600, ‘value’); // sets key → value, with 1h TTL.</p>
+<p>setnx 判断是否重复的，写入值<br>$redis-&gt;setnx(‘key’, ‘value’);<br>$redis-&gt;setnx(‘key’, ‘value’);</p>
+<p>delete  删除指定key的值<br>返回已经删除key的个数（长整数）<br>$redis-&gt;delete(‘key1’, ‘key2’);<br>$redis-&gt;delete(array(‘key3’, ‘key4’, ‘key5’));</p>
+<p>ttl<br>得到一个key的生存时间</p>
+<p>persist<br>移除生存时间到期的key<br>如果key到期 true 如果不到期 false</p>
+<p>mset （redis版本1.1以上才可以用）<br>同时给多个key赋值<br>$redis-&gt;mset(array(‘key0’ =&gt; ‘value0’, ‘key1’ =&gt; ‘value1’));</p>
+<p>multi, exec, discard<br>进入或者退出事务模式<br>参数可选Redis::MULTI或Redis::PIPELINE. 默认是 Redis::MULTI<br>Redis::MULTI：将多个操作当成一个事务执行<br>Redis::PIPELINE:让（多条）执行命令简单的，更加快速的发送给服务器，但是没有任何原子性的保证<br>discard:删除一个事务<br>返回值<br>multi()，返回一个redis对象，并进入multi-mode模式，一旦进入multi-mode模式，以后调用的所有方法都会返回相同的对象，只到exec(）方法被调用。</p>
+<p>watch, unwatch （代码测试后，不能达到所说的效果）<br>监测一个key的值是否被其它的程序更改。如果这个key在watch 和 exec （方法）间被修改，这个 MULTI/EXEC 事务的执行将失败（return false）<br>unwatch  取消被这个程序监测的所有key<br>参数，一对key的列表<br>$redis-&gt;watch(‘x’);</p>
+<p>$ret = $redis-&gt;multi() -&gt;incr(‘x’) -&gt;exec();</p>
+<p>subscribe *<br>方法回调。注意，该方法可能在未来里发生改变</p>
+<p>publish *<br>发表内容到某一个通道。注意，该方法可能在未来里发生改变</p>
+<p>exists<br>判断key是否存在。存在 true 不在 false</p>
+<p>incr, incrBy<br>key中的值进行自增1，如果填写了第二个参数，者自增第二个参数所填的值<br>$redis-&gt;incr(‘key1’);<br>$redis-&gt;incrBy(‘key1’, 10);</p>
+<p>decr, decrBy<br>做减法，使用方法同incr</p>
+<p>getMultiple<br>传参<br>由key组成的数组<br>返回参数<br>如果key存在返回value，不存在返回false<br>$redis-&gt;set(‘key1’, ‘value1’); $redis-&gt;set(‘key2’, ‘value2’); $redis-&gt;set(‘key3’, ‘value3’); $redis-&gt;getMultiple(array(‘key1’, ‘key2’, ‘key3’));<br>$redis-&gt;lRem(‘key1’, ‘A’, 2);<br>$redis-&gt;lRange(‘key1’, 0, -1);</p>
+<p>list相关操作<br>lPush<br>$redis-&gt;lPush(key, value);<br>在名称为key的list左边（头）添加一个值为value的 元素</p>
+<p>rPush<br>$redis-&gt;rPush(key, value);<br>在名称为key的list右边（尾）添加一个值为value的 元素</p>
+<p>lPushx/rPushx<br>$redis-&gt;lPushx(key, value);<br>在名称为key的list左边(头)/右边（尾）添加一个值为value的元素,如果value已经存在，则不添加</p>
+<p>lPop/rPop<br>$redis-&gt;lPop(‘key’);<br>输出名称为key的list左(头)起/右（尾）起的第一个元素，删除该元素</p>
+<p>blPop/brPop<br>$redis-&gt;blPop(‘key1’, ‘key2’, 10);<br>lpop命令的block版本。即当timeout为0时，若遇到名称为key i的list不存在或该list为空，则命令结束。如果timeout&gt;0，则遇到上述情况时，等待timeout秒，如果问题没有解决，则对keyi+1开始的list执行pop操作</p>
+<p>lSize<br>$redis-&gt;lSize(‘key’);<br>返回名称为key的list有多少个元素</p>
+<p>lIndex, lGet<br>$redis-&gt;lGet(‘key’, 0);<br>返回名称为key的list中index位置的元素</p>
+<p>lSet<br>$redis-&gt;lSet(‘key’, 0, ‘X’);<br>给名称为key的list中index位置的元素赋值为value</p>
+<p>lRange, lGetRange<br>$redis-&gt;lRange(‘key1’, 0, -1);<br>返回名称为key的list中start至end之间的元素（end为 -1 ，返回所有）</p>
+<p>lTrim, listTrim<br>$redis-&gt;lTrim(‘key’, start, end);<br>截取名称为key的list，保留start至end之间的元素</p>
+<p>lRem, lRemove<br>$redis-&gt;lRem(‘key’, ‘A’, 2);<br>删除count个名称为key的list中值为value的元素。count为0，删除所有值为value的元素，count&gt;0从头至尾删除count个值为value的元素，count&lt;0从尾到头删除|count|个值为value的元素</p>
+<p>lInsert<br>在名称为为key的list中，找到值为pivot 的value，并根据参数Redis::BEFORE | Redis::AFTER，来确定，newvalue 是放在 pivot 的前面，或者后面。如果key不存在，不会插入，如果 pivot不存在，return -1<br>$redis-&gt;delete(‘key1’); $redis-&gt;lInsert(‘key1’, Redis::AFTER, ‘A’, ‘X’); $redis-&gt;lPush(‘key1’, ‘A’); $redis-&gt;lPush(‘key1’, ‘B’); $redis-&gt;lPush(‘key1’, ‘C’); $redis-&gt;lInsert(‘key1’, Redis::BEFORE, ‘C’, ‘X’);<br>$redis-&gt;lRange(‘key1’, 0, -1);<br>$redis-&gt;lInsert(‘key1’, Redis::AFTER, ‘C’, ‘Y’);<br>$redis-&gt;lRange(‘key1’, 0, -1);<br>$redis-&gt;lInsert(‘key1’, Redis::AFTER, ‘W’, ‘value’);</p>
+<p>rpoplpush<br>返回并删除名称为srckey的list的尾元素，并将该元素添加到名称为dstkey的list的头部<br>$redis-&gt;delete(‘x’, ‘y’);<br>$redis-&gt;lPush(‘x’, ‘abc’); $redis-&gt;lPush(‘x’, ‘def’); $redis-&gt;lPush(‘y’, ‘123’); $redis-&gt;lPush(‘y’, ‘456’); // move the last of x to the front of y. var_dump($redis-&gt;rpoplpush(‘x’, ‘y’));<br>var_dump($redis-&gt;lRange(‘x’, 0, -1));<br>var_dump($redis-&gt;lRange(‘y’, 0, -1)); </p>
+<p>string(3) “abc”<br>array(1) { [0]=&gt; string(3) “def” }<br>array(3) { [0]=&gt; string(3) “abc” [1]=&gt; string(3) “456” [2]=&gt; string(3) “123” }</p>
+<p>SET操作相关<br>sAdd<br>向名称为key的set中添加元素value,如果value存在，不写入，return false<br>$redis-&gt;sAdd(key , value);</p>
+<p>sRem, sRemove<br>删除名称为key的set中的元素value<br>$redis-&gt;sAdd(‘key1’ , ‘set1’);<br>$redis-&gt;sAdd(‘key1’ , ‘set2’);<br>$redis-&gt;sAdd(‘key1’ , ‘set3’);<br>$redis-&gt;sRem(‘key1’, ‘set2’);</p>
+<p>sMove<br>将value元素从名称为srckey的集合移到名称为dstkey的集合<br>$redis-&gt;sMove(seckey, dstkey, value);</p>
+<p>sIsMember, sContains<br>名称为key的集合中查找是否有value元素，有ture 没有 false<br>$redis-&gt;sIsMember(key, value);</p>
+<p>sCard, sSize<br>返回名称为key的set的元素个数</p>
+<p>sPop<br>随机返回并删除名称为key的set中一个元素</p>
+<p>sRandMember<br>随机返回名称为key的set中一个元素，不删除</p>
+<p>sInter<br>求交集</p>
+<p>sInterStore<br>求交集并将交集保存到output的集合<br>$redis-&gt;sInterStore(‘output’, ‘key1’, ‘key2’, ‘key3’)</p>
+<p>sUnion<br>求并集<br>$redis-&gt;sUnion(‘s0’, ‘s1’, ‘s2’);<br>s0,s1,s2 同时求并集</p>
+<p>sUnionStore<br>求并集并将并集保存到output的集合<br>$redis-&gt;sUnionStore(‘output’, ‘key1’, ‘key2’, ‘key3’)；</p>
+<p>sDiff<br>求差集</p>
+<p>sDiffStore<br>求差集并将差集保存到output的集合</p>
+<p>sMembers, sGetMembers<br>返回名称为key的set的所有元素</p>
+<p>sort<br>排序，分页等<br>参数<br>‘by’ =&gt; ‘some_pattern_<em>‘,<br>‘limit’ =&gt; array(0, 1),<br>‘get’ =&gt; ‘some_other_pattern_</em>‘ or an array of patterns,<br>‘sort’ =&gt; ‘asc’ or ‘desc’,<br>‘alpha’ =&gt; TRUE,<br>‘store’ =&gt; ‘external-key’<br>例子<br>$redis-&gt;delete(‘s’); $redis-&gt;sadd(‘s’, 5); $redis-&gt;sadd(‘s’, 4); $redis-&gt;sadd(‘s’, 2); $redis-&gt;sadd(‘s’, 1); $redis-&gt;sadd(‘s’, 3);<br>var_dump($redis-&gt;sort(‘s’)); // 1,2,3,4,5<br>var_dump($redis-&gt;sort(‘s’, array(‘sort’ =&gt; ‘desc’))); // 5,4,3,2,1<br>var_dump($redis-&gt;sort(‘s’, array(‘sort’ =&gt; ‘desc’, ‘store’ =&gt; ‘out’))); // (int)5</p>
+<p>string命令<br>getSet<br>返回原来key中的值，并将value写入key<br>$redis-&gt;set(‘x’, ‘42’);<br>$exValue = $redis-&gt;getSet(‘x’, ‘lol’); // return ‘42’, replaces x by ‘lol’<br>$newValue = $redis-&gt;get(‘x’)’ // return ‘lol’</p>
+<p>append<br>string，名称为key的string的值在后面加上value<br>$redis-&gt;set(‘key’, ‘value1’);<br>$redis-&gt;append(‘key’, ‘value2’);<br>$redis-&gt;get(‘key’);</p>
+<p>getRange （方法不存在）<br>返回名称为key的string中start至end之间的字符<br>$redis-&gt;set(‘key’, ‘string value’);<br>$redis-&gt;getRange(‘key’, 0, 5);<br>$redis-&gt;getRange(‘key’, -5, -1);</p>
+<p>setRange （方法不存在）<br>改变key的string中start至end之间的字符为value<br>$redis-&gt;set(‘key’, ‘Hello world’);<br>$redis-&gt;setRange(‘key’, 6, “redis”);<br>$redis-&gt;get(‘key’);</p>
+<p>strlen<br>得到key的string的长度<br>$redis-&gt;strlen(‘key’);</p>
+<p>getBit/setBit<br>返回2进制信息</p>
+<p>zset（sorted set）操作相关<br>zAdd(key, score, member)：向名称为key的zset中添加元素member，score用于排序。如果该元素已经存在，则根据score更新该元素的顺序。<br>$redis-&gt;zAdd(‘key’, 1, ‘val1’);<br>$redis-&gt;zAdd(‘key’, 0, ‘val0’);<br>$redis-&gt;zAdd(‘key’, 5, ‘val5’);<br>$redis-&gt;zRange(‘key’, 0, -1); // array(val0, val1, val5)</p>
+<p>zRange(key, start, end,withscores)：返回名称为key的zset（元素已按score从小到大排序）中的index从start到end的所有元素<br>$redis-&gt;zAdd(‘key1’, 0, ‘val0’);<br>$redis-&gt;zAdd(‘key1’, 2, ‘val2’);<br>$redis-&gt;zAdd(‘key1’, 10, ‘val10’);<br>$redis-&gt;zRange(‘key1’, 0, -1); // with scores $redis-&gt;zRange(‘key1’, 0, -1, true);</p>
+<p>zDelete, zRem<br>zRem(key, member) ：删除名称为key的zset中的元素member<br>$redis-&gt;zAdd(‘key’, 0, ‘val0’);<br>$redis-&gt;zAdd(‘key’, 2, ‘val2’);<br>$redis-&gt;zAdd(‘key’, 10, ‘val10’);<br>$redis-&gt;zDelete(‘key’, ‘val2’);<br>$redis-&gt;zRange(‘key’, 0, -1); </p>
+<p>zRevRange(key, start, end,withscores)：返回名称为key的zset（元素已按score从大到小排序）中的index从start到end的所有元素.withscores: 是否输出socre的值，默认false，不输出<br>$redis-&gt;zAdd(‘key’, 0, ‘val0’);<br>$redis-&gt;zAdd(‘key’, 2, ‘val2’);<br>$redis-&gt;zAdd(‘key’, 10, ‘val10’);<br>$redis-&gt;zRevRange(‘key’, 0, -1); // with scores $redis-&gt;zRevRange(‘key’, 0, -1, true);</p>
+<p>zRangeByScore, zRevRangeByScore<br>$redis-&gt;zRangeByScore(key, star, end, array(withscores， limit ));<br>返回名称为key的zset中score &gt;= star且score &lt;= end的所有元素</p>
+<p>zCount<br>$redis-&gt;zCount(key, star, end);<br>返回名称为key的zset中score &gt;= star且score &lt;= end的所有元素的个数</p>
+<p>zRemRangeByScore, zDeleteRangeByScore<br>$redis-&gt;zRemRangeByScore(‘key’, star, end);<br>删除名称为key的zset中score &gt;= star且score &lt;= end的所有元素，返回删除个数</p>
+<p>zSize, zCard<br>返回名称为key的zset的所有元素的个数</p>
+<p>zScore<br>$redis-&gt;zScore(key, val2);<br>返回名称为key的zset中元素val2的score</p>
+<p>zRank, zRevRank<br>$redis-&gt;zRevRank(key, val);<br>返回名称为key的zset（元素已按score从小到大排序）中val元素的rank（即index，从0开始），若没有val元素，返回“null”。zRevRank 是从大到小排序</p>
+<p>zIncrBy<br>$redis-&gt;zIncrBy(‘key’, increment, ‘member’);<br>如果在名称为key的zset中已经存在元素member，则该元素的score增加increment；否则向集合中添加该元素，其score的值为increment</p>
+<p>zUnion/zInter<br>参数<br>keyOutput<br>arrayZSetKeys<br>arrayWeights<br>aggregateFunction Either “SUM”, “MIN”, or “MAX”: defines the behaviour to use on duplicate entries during the zUnion.<br>对N个zset求并集和交集，并将最后的集合保存在dstkeyN中。对于集合中每一个元素的score，在进行AGGREGATE运算前，都要乘以对于的WEIGHT参数。如果没有提供WEIGHT，默认为1。默认的AGGREGATE是SUM，即结果集合中元素的score是所有集合对应元素进行SUM运算的值，而MIN和MAX是指，结果集合中元素的score是所有集合对应元素中最小值和最大值。</p>
+<p>Hash操作<br>hSet<br>$redis-&gt;hSet(‘h’, ‘key1’, ‘hello’);<br>向名称为h的hash中添加元素key1—&gt;hello</p>
+<p>hGet<br>$redis-&gt;hGet(‘h’, ‘key1’);<br>返回名称为h的hash中key1对应的value（hello）</p>
+<p>hLen<br>$redis-&gt;hLen(‘h’);<br>返回名称为h的hash中元素个数</p>
+<p>hDel<br>$redis-&gt;hDel(‘h’, ‘key1’);<br>删除名称为h的hash中键为key1的域</p>
+<p>hKeys<br>$redis-&gt;hKeys(‘h’);<br>返回名称为key的hash中所有键</p>
+<p>hVals<br>$redis-&gt;hVals(‘h’)<br>返回名称为h的hash中所有键对应的value</p>
+<p>hGetAll<br>$redis-&gt;hGetAll(‘h’);<br>返回名称为h的hash中所有的键（field）及其对应的value</p>
+<p>hExists<br>$redis-&gt;hExists(‘h’, ‘a’);<br>名称为h的hash中是否存在键名字为a的域</p>
+<p>hIncrBy<br>$redis-&gt;hIncrBy(‘h’, ‘x’, 2);<br>将名称为h的hash中x的value增加2</p>
+<p>hMset<br>$redis-&gt;hMset(‘user:1’, array(‘name’ =&gt; ‘Joe’, ‘salary’ =&gt; 2000));<br>向名称为key的hash中批量添加元素</p>
+<p>hMGet<br>$redis-&gt;hmGet(‘h’, array(‘field1’, ‘field2’));<br>返回名称为h的hash中field1,field2对应的value</p>
+<p>redis 操作相关<br>flushDB<br>清空当前数据库</p>
+<p>flushAll<br>清空所有数据库</p>
+<p>randomKey<br>随机返回key空间的一个key<br>$key = $redis-&gt;randomKey();</p>
+<p>select<br>选择一个数据库<br>move<br>转移一个key到另外一个数据库<br>$redis-&gt;select(0); // switch to DB 0<br>$redis-&gt;set(‘x’, ‘42’); // write 42 to x<br>$redis-&gt;move(‘x’, 1); // move to DB 1<br>$redis-&gt;select(1); // switch to DB 1<br>$redis-&gt;get(‘x’); // will return 42</p>
+<p>rename, renameKey<br>给key重命名<br>$redis-&gt;set(‘x’, ‘42’);<br>$redis-&gt;rename(‘x’, ‘y’);<br>$redis-&gt;get(‘y’); // → 42<br>$redis-&gt;get(‘x’); // → <code>FALSE</code></p>
+<p>renameNx<br>与remane类似，但是，如果重新命名的名字已经存在，不会替换成功</p>
+<p>setTimeout, expire<br>设定一个key的活动时间（s）<br>$redis-&gt;setTimeout(‘x’, 3);</p>
+<p>expireAt<br>key存活到一个unix时间戳时间<br>$redis-&gt;expireAt(‘x’, time() + 3);</p>
+<p>keys, getKeys<br>返回满足给定pattern的所有key<br>$keyWithUserPrefix = $redis-&gt;keys(‘user*’);</p>
+<p>dbSize<br>查看现在数据库有多少key<br>$count = $redis-&gt;dbSize();</p>
+<p>auth<br>密码认证<br>$redis-&gt;auth(‘foobared’);</p>
+<p>bgrewriteaof<br>使用aof来进行数据库持久化<br>$redis-&gt;bgrewriteaof();</p>
+<p>slaveof<br>选择从服务器<br>$redis-&gt;slaveof(‘10.0.1.7’, 6379);</p>
+<p>save<br>将数据同步保存到磁盘</p>
+<p>bgsave<br>将数据异步保存到磁盘</p>
+<p>lastSave<br>返回上次成功将数据保存到磁盘的Unix时戳</p>
+<p>info<br>返回redis的版本信息等详情</p>
+<p>type<br>返回key的类型值<br>string: Redis::REDIS_STRING<br>set: Redis::REDIS_SET<br>list: Redis::REDIS_LIST<br>zset: Redis::REDIS_ZSET<br>hash: Redis::REDIS_HASH<br>other: Redis::REDIS_NOT_FOUND</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/PHP/" rel="tag"># PHP</a>
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/08/18/php-fpm-conf重要参数详解/" rel="next" title="php-fpm.conf重要参数详解">
+                <i class="fa fa-chevron-left"></i> php-fpm.conf重要参数详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/10/10/foreach使用&引用传递过程/" rel="prev" title="foreach使用&引用传递过程">
+                foreach使用&引用传递过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Mickey</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">tags</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Mickey</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+<span class="post-meta-divider">|</span>
+
+<div class="theme-info icp">
+<span>粤ICP备18125374号</span>
+</div>
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
