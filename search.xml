@@ -2,105 +2,17 @@
 <search>
   <entry>
     <title>警惕Go编程陷阱</title>
-    <url>/2019/10/16/%E8%AD%A6%E6%83%95Go%E7%BC%96%E7%A8%8B%E9%99%B7%E9%98%B1/</url>
-    <content><![CDATA[<p><strong>1. Nil != Nil</strong></p>
-<p>我们先来讲我们第一个问题 Nil 不等于 Nil，这话听上去好像 1 不等于 1 一样， 骗小孩子的病句。其实在 Go 当中有的时候确实会发生这种问题，当我们认为我们的变量是 nil 的时候，甚至于我们很信誓旦旦说它是 nil 的时候，它其实并不是。</p>
-<a id="more"></a>
-
-<p>** 自定义错误类型**</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955898-109b140f-36a4-4716-bfd6-a69a452e8043.webp#align=left&display=inline&height=711&originHeight=711&originWidth=1080&search=&size=0&status=done&width=657" alt></p>
-<p>我们定义了自定义的错误类型，handle函数中判断了参数x的值是否等于1，如果不等于1就返回一个自定义的Error指针类型。否则就返回一个nil。在main函数中，我们分别用参数 0 和 1 调用了两次，然后判断了error是不是nil,不是nil 就打印一句话。好像就是一个很寻常的go函数。</p>
-<p>那么我们的问题来了，它的输出是什么？</p>
-<p>我们大家一起来稍微分析一下这个代码，先看第 24 行调用，这个很明显结果不是 nil， 所以我们第26行的打印应该是会成功的打印。我们再来看一下第28行的调用，我们用参数 1 来调用，1 等于 1 ,所以说它会return nil。应该不会去打印的。我觉得应该是这样，我觉得大家可能也觉得是这样。</p>
-<p>给大家 10 秒钟时间大家可以判断一下到底是不是这样。</p>
-<p>我们现在来看一下真正的表现是什么？</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955901-0dd4bc4d-e1ba-4cad-bfbf-61ede55f5060.webp#align=left&display=inline&height=604&originHeight=604&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们来看一下最终的输出。呃呃呃呃呃呃呃，好像和想的不太一样，什么鬼,一定是golang的bug。。我们看到第二个也已经打印了，并且我们注意一下这一部分，它打印的类型确实是 nil，但是 nil 为什么又不等于 nil 呢？<br>这是不是一个问题？明明是 nil，那这肯定是个 Bug，其实我也是这么想的，我还记得是凌晨两点钟左右，当时非常高兴，好像挖到一个大宝藏一样，我在github还提了一个issue<br><a href="https://github.com/golang/go/issues/16160" target="_blank" rel="noopener">https://github.com/golang/go/issues/16160</a></p>
-<p>我说你们这个有 Bug，赶紧修，然后我就被分分钟打脸。</p>
-<p><strong>接口准则</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955914-706ace1c-4d5d-41f5-be33-2c84e7ad8c5e.webp#align=left&display=inline&height=652&originHeight=652&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们来看一下别人怎么来打我的脸？</p>
-<p>第一点，其实Go在实现接口的时候，保存了两个东西，一个是这一个接口背后的类型 T，一个是这个类型背后的值 V，因此当我们在讨论接口这个东西的时候，实际上我们永远是在讨论类型以及类型的值。</p>
-<p>第二点，只有类型与值同时是 nil 的时候这个接口才会是 nil，这点就是我们问题的来源。</p>
-<p>第三点，我们都知道接口是隐式实现的，当我们用一个接口类型去接收一个 nil 结构体的时候，这个结果将不是 nil，因为此时的接口值是有类型（T）的， 只是它的值（V）是 nil，所以说我们刚才的 if 判断应该是成立的。</p>
-<p><strong>方案一</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955917-32db1ca1-bd87-46b7-a0a9-b2cf1a2ec289.webp#align=left&display=inline&height=716&originHeight=716&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们基于这个认识来看一下我们应该怎么来修这个问题，就很简单的。第一个修复的办法是，我们不再用 interface，我们直接用 struct，因为这个时候从头到尾都没有出现interface 的事情，自然不会出现与interface有关的问题。</p>
-<p><strong>方案二</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955906-1f2264b0-153f-413d-b734-427d840595f7.webp#align=left&display=inline&height=700&originHeight=700&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们还会有第二种方案，我们看一下，我不返回这一个 struct，我返回一个 error，这样再打印第 30 行的 err 就真的是 bug 了😂。</p>
-<p><strong>2. 危险的 HTTP 请求</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955933-393d6d29-5223-4fc2-a03a-6ffc59c934a2.webp#align=left&display=inline&height=704&originHeight=704&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们接下来看一下第二个问题 - 危险的 HTTP 请求。调用其他平台的HTTP API或者调用自己的内部服务是一件非常平常的事情，但是在Golang中，如果不仔细处理，则仍然容易造成一些泪流满面的事故发生。</p>
-<p><strong>简单的 Get 请求示例</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955927-78282e9b-ff88-4180-b8a6-bce69dd93361.webp#align=left&display=inline&height=538&originHeight=538&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们通常会写这样的代码来请求第三方解耦。发起一个GET请求，然后读取返回的数据，进行下一步处理。这几乎是一个教科书式的代码。</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955971-d155e21c-3a78-4d6a-98e5-3120951f134b.webp#align=left&display=inline&height=689&originHeight=689&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>当你的系统没什么人用的时候，这段代码会工作的非常良好，但是一旦有大量的流量，则会造成一个很严重的问题。<br>既然我们拿出来讲，肯定不是这么简单的事情，我们先来看一下 当我们在讨论HTTP请求的时候到底在讨论什么。</p>
-<p><strong>http.Client 请求细节分析</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955963-2c7748ff-83b4-41a4-9542-1d0c7df583e9.webp#align=left&display=inline&height=727&originHeight=727&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们先来看一下在Go里面进行HTTP请求到底是怎么一回事。</p>
-<p>上面是非常简化之后的HTTP调用流程图，左边是我们的用户级代码，右边是HTTP包内部的流程。httpClient.Get() 只是httpClient.Do()的一个语法而已，在Do方法中会做一系列的检查与判断，然后就会进入到 roundtrip 的流程。roundtrip流程负责了基础数据交互的逻辑，roundtrip首先会调用getConn方法获取一个原始连接（可能是拿出已经创建好的，也可能是全新建立一个），之后将开启两个协程，一个用来读取数据，一个用来发送数据。在读取的协程里面，会等待一个信号，阻塞等待协程变量信号的到来，当这个信号到达之后，它会尝试把连接又还回到连接池，结束整个 HTTP 的生命周期。也就是说当我们这个信号一直没到的时候，我们这个协程其实一直是卡住的，它没有被释放，虽然讲我们可以很轻松放着这个东西不管了，因为读完之后你可以愉快干其他事情，但是它还孤零零卡在这里。</p>
-<p>这里面有个很重大的问题，这个信号什么时候到来？我们来看一下马赛克后面的内容，其实就是我们在调用这一个 Response.Body.Close 的时候，它就会发出WaitForBodyRead的信号，这也是我们在网上看到很多的文章都会提醒你做一个HTTP请求，不要忘记关闭 Body，这就是问题的本质，其实关闭 Body 这件事情没有做很多的事情，比较有意义的就是利用 Body这个信号需要去完成整个的生命周期。</p>
-<p><strong>HTTP 连接泄露解决方案</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955946-b781e4d6-387f-439e-9b5c-40f9fc3f1fe2.webp#align=left&display=inline&height=565&originHeight=565&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们修复方法就很简单，我们只需要把这个请求关闭，把这个连接还回去，这样处理之后，我们这个代码就是一个真正的教科书级的代码。</p>
-<p><strong>网络编程准则</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956037-71fe76ff-31d4-41a5-9b05-2f2d8a1c5b84.webp#align=left&display=inline&height=449&originHeight=449&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们用 Golang 做网络编程的时候，其实会有一个很有意思的地方，它跟其他语言是不太一样的，就是我们大部分的组件背后会依赖于连接池的技术，比如说我们常用的MQ/Redis/MySQL 等，背后往往都是用的连接池的技术。</p>
-<p>所以我们除了要学习基本的连接池相关的知识，比如说为什么需要连接池，以及连接池能够解决什么问题，我们还要去稍微深入地去学习一下，我们用的这些库的连接池设计我应该怎么样才能够正确管理好的我的TCP 连接，这是我们作为一个业务层是要掌握的一些网络方面的知识，我们一定要知道我们在用一个网络库的时候它背后的 TCP 的过程到底是怎么样，它会让我们提前去避免问题。因为这些问题往往是很难被提前发现的。</p>
-<p><strong>3. 可怕的协程</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955970-25d7e7b4-97eb-4ac1-83fa-e69c399a0a74.webp#align=left&display=inline&height=656&originHeight=656&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>接下来再来看下一个问题，可怕的协程，其实协程是在整个 Golang 里面，可以这么来讲，Golang 其实就是为了协程而生的，因为 Golang 里面的 Go，就是够浪。</p>
-<p><strong>简易的 BeeGo 计数器</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955960-82966e3e-3b3d-4910-b73b-4baf8bb607bf.webp#align=left&display=inline&height=548&originHeight=548&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们先来看一个有关协程小小的 demo，我们用Beego框架开发了一个很简单的 API，没做什么很有意义的事情，只是往map里面写入了一个数据，这个问题应该是很明显的，我们大家应该能够一目了然，很容易知道，因为之前的讲师也有提到过，Go 里面会有并发的读写问题，这里面就发生了并发的读写问题，我们也知道怎么去解决，只要给我们第 16行里面加一把锁这个问题就解决了，这个问题是一个很明显的问题，没有什么特别要提的。</p>
-<p><strong>跨协程资源共享</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955965-98c4d56b-abf6-43b5-bd5b-a14dc7a2817b.webp#align=left&display=inline&height=710&originHeight=710&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>比较有意思的是下面这个问题，我们同时开启了两个协程，在每个协程里面分别循环了 100 次，然后做了一个累加，利用Sleep来模拟了一些网络操作时间，现在我们的问题是最后累加出来的值是多少，这里我可以给大家一分钟时间讨论一下，和身边的小伙伴一起讨论一下。</p>
-<p>我们来看一下，它的值是多少呢？第一个是 100 吗？第二个是 200 吗？第三个是随机，只有天知道，我们不知道的。还有一个是以上答案都不对。现在我们来投票，A、B、C、D。</p>
-<p>这个例子里面我们做数据读写的时候很聪明的加了锁，所以不会有并发写的问题。这个例子主要的点是这个Sleep，这个 Sleep 的时间是经过精妙设计的，它会精妙设计出具体的一个结果。</p>
-<p>我觉得大家应该是猜不到的。最终我们算出的结果是 150，或者说它几乎是 150，因为我只测出 150，可能以上某种情况下面会有其他的一些值，但我测出来就是 150。至于说为什么是 150，我觉得是一个很有意思的问题，我不回答，我们在群里面在讨论。&lt;编注：这个例子暴露出来的就是对原子性的理解不足&gt;</p>
-<p><strong>跨协程资源共享 - 粗暴地修复 bug</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955999-6138f373-77e5-4090-951b-378ebbe03a5a.webp#align=left&display=inline&height=714&originHeight=714&originWidth=1080&search=&size=0&status=done&width=1080" alt><br>我们来看一下怎么来修这个 Bug，看代码好像没有怎么变动，只是把 lock 这一个函数移过来，提前了一点去进行Lock动作，我整个代码逻辑就只变动了 lock 这一行，我们可以去对比一下，我们把 23 行的 lock 和 32 行的 lock 往前面提了。</p>
-<p><strong>协程使用准则</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955973-b95d6a79-41b1-4ba6-93ac-df528af9a013.webp#align=left&display=inline&height=551&originHeight=551&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们可以很简单地使用协程，但是Go 的协程其实远远不是这么简单。它有上面种种这些问题，这些问题跟协程有没有关系？有关系，也没有关系，因为它都是属于并发编程的问题。</p>
-<p>这是我个人的感受。Golang提供了很方便的并发，但是它没有提供安全的并发，我们仍然需要非常小心地去处理这些资源竞争，以及要非常小心地知道我的资源什么时候开始去锁，什么时候开始解锁。</p>
-<p>所以我们现在团队内部有这么一个共识，我们会小心在代码里面避免这种情况发生，避免在多协程里面去共享同一个对象，去给它同时做读写的情况。因为他们通常是我们整个系统疑难 Bug 的源泉，所以我们对于这种情况的应用就是尽量避免，除非你很自信。</p>
-<p><strong>4. 无处不在的 JSON</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955989-580dc926-0cef-424b-b89c-a4482b0b0185.webp#align=left&display=inline&height=663&originHeight=663&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>下面我们来看下一个话题，JSON。现在来讲 ，JSON 已经成为了HTTP数据交互的事实上的标准，基本上每个人可能从工作第一天开始就会接触到它。JSON 的问题是什么呢？</p>
-<p><strong>使用 Struct 接收 JSON</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955995-17e52fee-b4ed-4883-b34f-fcc2f34b9d5e.webp#align=left&display=inline&height=633&originHeight=633&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们来看一下在 Golang 中怎么使用 JSON。</p>
-<p>这个代码描述了我们怎么去用 struct 去接受一个JSON，我们定义了一个 struct，模拟了一个返回，把它们可以反序列化。我们看一下它的打印，跟我们的预期应该是一样。</p>
-<p><strong>使用 Map 接收 JSON</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222955995-20b8538b-079a-4550-8f05-2ba7751df93a.webp#align=left&display=inline&height=554&originHeight=554&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们再来看一下，当我们用 map 来接收的时候好像不太一样了，为什么所有这种数字的类型已经变成了一个 float64，而不是一个 int。</p>
-<p> 这个问题本身来讲没有很奇怪的，它其实就是一个规则而已，但是它引发了一个很有意思的思考，我们来想一下我们在Golang 当中用哪一个基础类型来处理 JSON 当中的数字类型是最靠谱的、最合适的？</p>
-<p>JSON 只有数字类型，没有 int ，long 这些东西，任何的正数、整数、负数都可以支持。那么我们在Go用什么来支持是最合适的呢？其实就是 Float64，我们抛开上下边界的问题，其实 Float64 是其他所有Golang 数字类型的一个并集。</p>
-<p><strong>类型映射规则</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956044-b20a9e7b-6cd2-4ab6-a224-1ea6a2361368.webp#align=left&display=inline&height=608&originHeight=608&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们这里可以看到在 JSON 中处理这种类型映射关系的时候，当你没有去指明一个类型的时候，它大概会以这样的方式去给你做一个假设。比如说Object，就会用一个map[string]interface{} 来作为接收。这个映射关系是非常有意思的，在我们现在的业务系统开发当中，公司与公司之间的合作，不同编程语言之间的协作变得越来越多，如何去做不同系统之间的映射，技术的映射、类型的映射，甚至一些功能逻辑上的映射，是我们整个系统集成工作里面是一件最最重要的事情。&lt;编注：这个问题的目的是抛出系统集成的话题，希望大家做系统集成工作的时候要非常在意兼容性&gt;</p>
-<p><strong>5. 骄傲的指针</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956054-c9bf8166-465f-40e6-be5d-bfc370b58e63.webp#align=left&display=inline&height=586&originHeight=586&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们再来看今天的最后一个问题，骄傲的指针。指针其实我觉得是挺可怕的，它会让人非常不爽，会有很多意外的发生。</p>
-<p><strong>循环变量指针</strong></p>
-<p>我们定义了一个函数printNumber,接收一个int类型的指针形参，在函数内部仅仅是打印了一下数字。我现在问题是最后输出的是什么？</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956042-2c8551b7-7671-45ae-830e-a304bb80a7b6.webp#align=left&display=inline&height=724&originHeight=724&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>我们来看，最后输出的全部是 3。如果大家写过 C 代码可能对这种情况比较熟悉。我们都知道在 Golang 里面是可以去打印一个指针具体内存地址。我们来看一下这些值内存的类型到底是怎么样？可以发现它打印出来的内存地址都一样，所以说它的值一样，是因为它的指针，其实它是同一个指针，它同一个对象，所以说同一个对象肯定只能有一个值。</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956012-cf372dcc-e921-4ee4-b155-1cf400b1a72e.webp#align=left&display=inline&height=665&originHeight=665&originWidth=999&search=&size=0&status=done&width=999" alt></p>
-<p>上面这个例子和range版本是等价的。这种写法让人一目了然就知道，我们定义了一个 变量V，先把这个V 去分别赋值，然后再循环，得出的结论跟我们上面是一模一样的。</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956051-3dfcdbca-0e8c-440a-a094-c11f072444ef.webp#align=left&display=inline&height=424&originHeight=424&originWidth=1080&search=&size=0&status=done&width=1080" alt></p>
-<p>为什么会一样呢？其实这只是一个设计而已。在 Golang 语言规范当中就指出了range 子句中的变量只会定义一次，就是我们刚才上面第 15 行，然后它会被重复使用，我们循环里面去给它们不停地赋值。第二点，当我们异步应用协程的方式去使用 range 变量这个指针的时候，其实它的结果是非预期的，不过这种情况一般是最后一次迭代的值。</p>
-<p>上面这些问题是我这几年所积累的一些有关 Golang 本身特性引发的一些让人崩溃的瞬间。</p>
-<p><strong>学 Go 到底在学什么</strong></p>
-<p><img src="https://cdn.nlark.com/yuque/0/2019/webp/117648/1571222956050-cf2db7ef-9e0e-45ad-8c76-f95504103dc3.webp#align=left&display=inline&height=549&originHeight=549&originWidth=1080&search=&size=0&status=done&width=1080" alt><br>接下来提一下我们学习 Golang，到底在学习什么样的东西？</p>
-<p>第一， Golang 是一个最容易上手的编译型语言，它不像新型的Rust这样的语言有高级的特性，它没有。</p>
-<p>第二，它其实带有 GC 和 Runtime 的语言。</p>
-<p>第三，最重要的一点，它是语言级别支持协程。这是很重要的一个点，协程不是一个复杂的技术，很多年前就已经被提出来了。Golang 的伟大之处在于语言级别支持，官方的库都能支持协程的特性。因为语言支持协程，所以它是一个从基因当中用来适合做高性能后台开发的编程语言。很多人都说 Golang 是一个系统编程语言，很多人以为这个系统是操作系统，其实不是，这个系统指的是Web后台系统，因为里面所有的类似的包就会发现几乎大量的跟网络和数据交互有关的一些库，所以它从头到尾没有说自己是用来开发操作系统的。</p>
-]]></content>
+    <url>/2019/10/16/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<p>1、 查看远程所有分支</p>
+<pre><code>git branch -r</code></pre><p>2、查看所有分支</p>
+<pre><code>git branch -a</code></pre><p>3、拉取远程分支（如果不是origin，则需要换成对应的名称）</p>
+<pre><code>git remote update origin --prune</code></pre><p>4、创建分支</p>
+<pre><code>git checkout -b example</code></pre><p>5、切换分支</p>
+<pre><code>git checkout example</code></pre><p>6、查看当前分支</p>
+<pre><code>git branch</code></pre><p>7、拉取当前分支代码</p>
+<pre><code>git pull origin example</code></pre><p>8、如果在远程服务器上有代码更新，直接丢弃所有更改的命令</p>
+<pre><code>git checkout ./</code></pre><p>9、解决pull时提示冲突</p>
+<pre><code>git reset --hard FETCH_HEAD</code></pre>]]></content>
       <tags>
         <tag>Go</tag>
       </tags>
