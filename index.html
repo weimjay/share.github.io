@@ -1537,9 +1537,9 @@
 
       
         
-          <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>Redis不仅可作为缓存服务器，还可用作消息队列。它的列表类型天生支持用作消息队列。如下图所示：</p>
-<p><img src="https://i.loli.net/2019/12/19/ZV3CB1KvxdgS78T.png" alt></p>
-<p>由于Redis的列表是使用双向链表实现的，保存了头尾节点，所以在列表头尾两边插取元素都是非常快的。</p>
+          <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>平时习惯使用 Rabbitmq 和 Kafka 作为消息中间件，在应用程序之间增加异步消息传递功能。这两个中间件都是专业的消息队列中间件，特性之多超出了大多数人的理解能力。</p>
+<p>使用过 Rabbitmq 的人知道它使用起来有多复杂，发送消息之前要创建 Exchange，再创建 Queue，还要将 Queue 和 Exchange 通过某种规则绑定起来，发消息的时候要指定 routing-key，还要控制头部信息。消费者在消费消息之前也要进行上面一系列的繁琐过程。尤其是绝大多数情况下，即使在消息队列只有一组消费者，也需要经历上面这些繁琐的过程。</p>
+<p>有了 Redis，它就可以让我们解脱出来。对于那些只有一组消费者的消息队列，使用 Redis 可以非常轻松地搞定。需要注意的是，Redis 的消息队列不是专业的消息队列，它没有非常多的高级特性，没有 ack 保证，如果对消息的可靠性有着极高要求，那么它就不适合使用。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2017/10/18/Redis消息队列/#more" rel="contents">
