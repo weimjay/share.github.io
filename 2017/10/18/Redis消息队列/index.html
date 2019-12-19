@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="Redis,">
 
 
 
@@ -79,17 +79,21 @@
 
 
 
-<meta name="description" content="二者的定义： 当你在浏览网站的时候，WEB 服务器会先送一小小资料放在你的计算机上，Cookie 会帮你在网站上所打的文字或是一些选择，都纪录下来。当下次你再光临同一个网站，WEB 服务器会先看看有没有它上次留下的 Cookie 资料，有的话，就会依据 Cookie里的内容来判断使用者，送出特定的网页内容给你。 Cookie 的使用很普遍，许多有提供个人化服务的网站，都是利用 Cookie来辨认使">
+<meta name="description" content="概要Redis不仅可作为缓存服务器，还可用作消息队列。它的列表类型天生支持用作消息队列。如下图所示：  由于Redis的列表是使用双向链表实现的，保存了头尾节点，所以在列表头尾两边插取元素都是非常快的。 延时队列背景在业务发展过程中，会出现一些需要延时处理的场景，比如：a.订单下单之后超过30分钟用户未支付，需要取消订单；b.订单一些评论，如果48h用户未对商家评论，系统会自动产生一条默认评论；c">
+<meta name="keywords" content="Redis">
 <meta property="og:type" content="article">
-<meta property="og:title" content="cookie和session的区别详解">
-<meta property="og:url" content="http://yoursite.com/2017/10/18/cookie和session的区别详解/index.html">
+<meta property="og:title" content="Redis消息队列">
+<meta property="og:url" content="http://yoursite.com/2017/10/18/Redis消息队列/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="二者的定义： 当你在浏览网站的时候，WEB 服务器会先送一小小资料放在你的计算机上，Cookie 会帮你在网站上所打的文字或是一些选择，都纪录下来。当下次你再光临同一个网站，WEB 服务器会先看看有没有它上次留下的 Cookie 资料，有的话，就会依据 Cookie里的内容来判断使用者，送出特定的网页内容给你。 Cookie 的使用很普遍，许多有提供个人化服务的网站，都是利用 Cookie来辨认使">
+<meta property="og:description" content="概要Redis不仅可作为缓存服务器，还可用作消息队列。它的列表类型天生支持用作消息队列。如下图所示：  由于Redis的列表是使用双向链表实现的，保存了头尾节点，所以在列表头尾两边插取元素都是非常快的。 延时队列背景在业务发展过程中，会出现一些需要延时处理的场景，比如：a.订单下单之后超过30分钟用户未支付，需要取消订单；b.订单一些评论，如果48h用户未对商家评论，系统会自动产生一条默认评论；c">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-11-21T07:58:03.000Z">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga23wkv7qnj30h708b0t0.jpg">
+<meta property="og:image" content="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga23xwui61j30pe0hmdhu.jpg">
+<meta property="og:updated_time" content="2019-12-19T08:23:50.138Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="cookie和session的区别详解">
-<meta name="twitter:description" content="二者的定义： 当你在浏览网站的时候，WEB 服务器会先送一小小资料放在你的计算机上，Cookie 会帮你在网站上所打的文字或是一些选择，都纪录下来。当下次你再光临同一个网站，WEB 服务器会先看看有没有它上次留下的 Cookie 资料，有的话，就会依据 Cookie里的内容来判断使用者，送出特定的网页内容给你。 Cookie 的使用很普遍，许多有提供个人化服务的网站，都是利用 Cookie来辨认使">
+<meta name="twitter:title" content="Redis消息队列">
+<meta name="twitter:description" content="概要Redis不仅可作为缓存服务器，还可用作消息队列。它的列表类型天生支持用作消息队列。如下图所示：  由于Redis的列表是使用双向链表实现的，保存了头尾节点，所以在列表头尾两边插取元素都是非常快的。 延时队列背景在业务发展过程中，会出现一些需要延时处理的场景，比如：a.订单下单之后超过30分钟用户未支付，需要取消订单；b.订单一些评论，如果48h用户未对商家评论，系统会自动产生一条默认评论；c">
+<meta name="twitter:image" content="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga23wkv7qnj30h708b0t0.jpg">
 
 
 
@@ -119,13 +123,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2017/10/18/cookie和session的区别详解/">
+  <link rel="canonical" href="http://yoursite.com/2017/10/18/Redis消息队列/">
 
 
 
 
 
-  <title>cookie和session的区别详解 | Hexo</title>
+  <title>Redis消息队列 | Hexo</title>
   
 
 
@@ -284,7 +288,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/18/cookie和session的区别详解/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/10/18/Redis消息队列/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Mickey">
@@ -301,7 +305,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">cookie和session的区别详解</h1>
+          <h1 class="post-title" itemprop="name headline">Redis消息队列</h1>
         
 
         <div class="post-meta">
@@ -336,8 +340,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/PHP/" itemprop="url" rel="index">
-                    <span itemprop="name">PHP</span>
+                  <a href="/categories/Redis/" itemprop="url" rel="index">
+                    <span itemprop="name">Redis</span>
                   </a>
                 </span>
 
@@ -373,26 +377,20 @@
       
 
       
-        <p>二者的定义：</p>
-<p>当你在浏览网站的时候，WEB 服务器会先送一小小资料放在你的计算机上，Cookie 会帮你在网站上所打的文字或是一些选择，都纪录下来。当下次你再光临同一个网站，WEB 服务器会先看看有没有它上次留下的 Cookie 资料，有的话，就会依据 Cookie里的内容来判断使用者，送出特定的网页内容给你。 Cookie 的使用很普遍，许多有提供个人化服务的网站，都是利用 Cookie来辨认使用者，以方便送出使用者量身定做的内容，像是 Web 接口的免费 email 网站，都要用到 Cookie。</p>
-<p>具体来说cookie机制采用的是在客户端保持状态的方案，而session机制采用的是在服务器端保持状态的方案。</p>
-<p>同时我们也看到，由于采用服务器端保持状态的方案在客户端也需要保存一个标识，所以session机制可能需要借助于cookie机制来达到保存标识的目的，但实际上它还有其他选择。</p>
-<a id="more"></a>
-
-<p>cookie机制。正统的cookie分发是通过扩展HTTP协议来实现的，服务器通过在HTTP的响应头中加上一行特殊的指示以提示浏览器按照指示生成相应的cookie。然而纯粹的客户端脚本如JavaScript或者VBScript也可以生成cookie。而cookie的使用是由浏览器按照一定的原则在后台自动发送给服务器的。浏览器检查所有存储的cookie，如果某个cookie所声明的作用范围大于等于将要请求的资源所在的位置，则把该cookie附在请求资源的HTTP请求头上发送给服务器。</p>
-<p>cookie的内容主要包括：名字，值，过期时间，路径和域。路径与域一起构成cookie的作用范围。若不设置过期时间，则表示这个cookie的生命期为浏览器会话期间，关闭浏览器窗口，cookie就消失。这种生命期为浏览器会话期的cookie被称为会话cookie。</p>
-<p>会话cookie一般不存储在硬盘上而是保存在内存里，当然这种行为并不是规范规定的。若设置了过期时间，浏览器就会把cookie保存到硬盘上，关闭后再次打开浏览器，这些cookie仍然有效直到超过设定的过期时间。存储在硬盘上的cookie可以在不同的浏览器进程间共享，比如两个IE窗口。而对于保存在内存里的cookie，不同的浏览器有不同的处理方式</p>
-<p>session机制。session机制是一种服务器端的机制，服务器使用一种类似于散列表的结构（也可能就是使用散列表）来保存信息。当程序需要为某个客户端的请求创建一个session时，服务器首先检查这个客户端的请求里是否已包含了一个session标识（称为session id），如果已包含则说明以前已经为此客户端创建过session，服务器就按照session id把这个session检索出来使用（检索不到，会新建一个），如果客户端请求不包含session id，则为此客户端创建一个session并且生成一个与此session相关联的session id，session id的值应该是一个既不会重复，又不容易被找到规律以仿造的字符串，这个session id将被在本次响应中返回给客户端保存。保存这个session id的方式可以采用cookie，这样在交互过程中浏览器可以自动的按照规则把这个标识发送给服务器。一般这个cookie的名字都是类似于SEEESIONID。但cookie可以被人为的禁止，则必须有其他机制以便在cookie被禁止时仍然能够把session id传递回服务器。</p>
-<p>经常被使用的一种技术叫做URL重写，就是把session id直接附加在URL路径的后面。还有一种技术叫做表单隐藏字段。就是服务器会自动修改表单，添加一个隐藏字段，以便在表单提交时能够把session id传递回服务器。比如： </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;form name=&quot;testform&quot; action=&quot;/xxx&quot;&gt; </span><br><span class="line">&lt;input type=&quot;hidden&quot; name=&quot;jsessionid&quot; value=&quot;ByOK3vjFD75aPnrF7C2HmdnV6QZcEbzWoWiBYEnLerjQ99zWpBng!-145788764&quot;&gt; </span><br><span class="line">&lt;input type=&quot;text&quot;&gt; </span><br><span class="line">&lt;/form&gt;</span><br></pre></td></tr></table></figure>
-
-<p>实际上这种技术可以简单的用对action应用URL重写来代替。</p>
-<p>cookie 和session 的区别：</p>
-<p>1、cookie数据存放在客户的浏览器上，session数据放在服务器上。</p>
-<p>2、cookie不是很安全，别人可以分析存放在本地的COOKIE并进行COOKIE欺骗考虑到安全应当使用session。</p>
-<p>3、session会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能考虑到减轻服务器性能方面，应当使用COOKIE。</p>
-<p>4、单个cookie保存的数据不能超过4K，很多浏览器都限制一个站点最多保存20个cookie。</p>
-<p>5、所以个人建议：<br>将登陆信息等重要信息存放在SESSION<br>其他信息如果需要保留，可以放在COOKIE中</p>
+        <h2 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h2><p>Redis不仅可作为缓存服务器，还可用作消息队列。它的列表类型天生支持用作消息队列。如下图所示：</p>
+<p><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga23wkv7qnj30h708b0t0.jpg" alt></p>
+<p>由于Redis的列表是使用双向链表实现的，保存了头尾节点，所以在列表头尾两边插取元素都是非常快的。</p>
+<h2 id="延时队列"><a href="#延时队列" class="headerlink" title="延时队列"></a>延时队列</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>在业务发展过程中，会出现一些需要延时处理的场景，比如：<br>a.订单下单之后超过30分钟用户未支付，需要取消订单；<br>b.订单一些评论，如果48h用户未对商家评论，系统会自动产生一条默认评论；<br>c.点我达订单下单后，超过一定时间订单未派出，需要超时取消订单等。<br>处理这类需求，比较直接简单的方式就是定时任务轮训扫表。这种处理方式在数据量不大的场景下是完全没问题，但是当数据量大的时候高频的轮训数据库就会比较的耗资源，导致数据库的慢查或者查询超时。所以在处理这类需求时候，采用了延时队列来完成。</p>
+<h3 id="几种延时队列"><a href="#几种延时队列" class="headerlink" title="几种延时队列"></a>几种延时队列</h3><p>延时队列就是一种带有延迟功能的消息队列。下面会介绍几种目前已有的延时队列：</p>
+<h4 id="1-Rocketmq延时队列"><a href="#1-Rocketmq延时队列" class="headerlink" title="1.Rocketmq延时队列"></a>1.Rocketmq延时队列</h4><p>优点：消息持久化，分布式<br>缺点：不支持任意时间精度，只支持特定level的延时消息</p>
+<h4 id="2-Rabbitmq延时队列（TTL-DLX实现）"><a href="#2-Rabbitmq延时队列（TTL-DLX实现）" class="headerlink" title="2.Rabbitmq延时队列（TTL+DLX实现）"></a>2.Rabbitmq延时队列（TTL+DLX实现）</h4><p>优点：消息持久化，分布式<br>缺点：延时相同的消息必须扔在同一个队列</p>
+<h3 id="Redis实现的延时消息队列适合的项目特点："><a href="#Redis实现的延时消息队列适合的项目特点：" class="headerlink" title="Redis实现的延时消息队列适合的项目特点："></a>Redis实现的延时消息队列适合的项目特点：</h3><ul>
+<li>Spring框架管理对象</li>
+<li>有消息需求，但不想维护mq中间件</li>
+<li>有使用redis</li>
+<li>对消息持久化并没有很苛刻的要求</li>
+</ul>
+<h3 id="Redis实现的延时消息队列思路"><a href="#Redis实现的延时消息队列思路" class="headerlink" title="Redis实现的延时消息队列思路"></a>Redis实现的延时消息队列思路</h3><p>Redis由于其自身的Zset数据结构，本质就是Set结构上加了个排序的功能，除了添加数据value之外，还提供另一属性score，这一属性在添加修改元素时候可以指定，每次指定后，Zset会自动重新按新的值调整顺序。可以理解为有两列字段的数据表，一列存value,一列存顺序编号。操作中key理解为zset的名字，那么对延时队列又有何用呢？<br>试想如果score代表的是想要执行时间的时间戳，在某个时间将它插入Zset集合中，它变会按照时间戳大小进行排序，也就是对执行时间前后进行排序，这样的话，起一个死循环线程不断地进行取第一个key值，如果当前时间戳大于等于该key值的socre就将它取出来进行消费删除，就可以达到延时执行的目的, 注意不需要遍历整个Zset集合，以免造成性能浪费。<br>Zset的排列效果如下图：<br><img src="https://ws1.sinaimg.cn/large/0069Q0Vtgy1ga23xwui61j30pe0hmdhu.jpg" alt></p>
 
       
     </div>
@@ -407,6 +405,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"># Redis</a>
+          
+        </div>
       
 
       
@@ -481,8 +485,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -542,6 +555,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概要"><span class="nav-number">1.</span> <span class="nav-text">概要</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#延时队列"><span class="nav-number">2.</span> <span class="nav-text">延时队列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">2.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#几种延时队列"><span class="nav-number">2.2.</span> <span class="nav-text">几种延时队列</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Rocketmq延时队列"><span class="nav-number">2.2.1.</span> <span class="nav-text">1.Rocketmq延时队列</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Rabbitmq延时队列（TTL-DLX实现）"><span class="nav-number">2.2.2.</span> <span class="nav-text">2.Rabbitmq延时队列（TTL+DLX实现）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis实现的延时消息队列适合的项目特点："><span class="nav-number">2.3.</span> <span class="nav-text">Redis实现的延时消息队列适合的项目特点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis实现的延时消息队列思路"><span class="nav-number">2.4.</span> <span class="nav-text">Redis实现的延时消息队列思路</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
