@@ -79,17 +79,17 @@
 
 
 
-<meta name="description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：  Hexo分支 – 用来保存所有Hexo的源文件 master分支 – 用来保存Hexo生成的博客文件  在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy">
+<meta name="description" content="我们经常需要在公司或者家庭多台电脑上完成hexo博客的撰写和发布工作，这就涉及到hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：  hexo分支 – 用来保存所有hexo的源文件 master分支 – 用来保存hexo生成的博客文件  在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。hexo的deploy">
 <meta property="og:type" content="article">
 <meta property="og:title" content="完美的Hexo多电脑同步方法">
 <meta property="og:url" content="http://yoursite.com/2018/10/18/完美的Hexo多电脑同步方法/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：  Hexo分支 – 用来保存所有Hexo的源文件 master分支 – 用来保存Hexo生成的博客文件  在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy">
+<meta property="og:description" content="我们经常需要在公司或者家庭多台电脑上完成hexo博客的撰写和发布工作，这就涉及到hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：  hexo分支 – 用来保存所有hexo的源文件 master分支 – 用来保存hexo生成的博客文件  在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。hexo的deploy">
 <meta property="og:locale" content="en">
-<meta property="og:updated_time" content="2019-12-18T07:40:40.253Z">
+<meta property="og:updated_time" content="2019-12-19T07:59:00.034Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="完美的Hexo多电脑同步方法">
-<meta name="twitter:description" content="我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：  Hexo分支 – 用来保存所有Hexo的源文件 master分支 – 用来保存Hexo生成的博客文件  在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。Hexo的deploy">
+<meta name="twitter:description" content="我们经常需要在公司或者家庭多台电脑上完成hexo博客的撰写和发布工作，这就涉及到hexo多电脑的同步问题。 网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：  hexo分支 – 用来保存所有hexo的源文件 master分支 – 用来保存hexo生成的博客文件  在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。hexo的deploy">
 
 
 
@@ -373,26 +373,26 @@
       
 
       
-        <div class="note warning"><p>我们经常需要在公司或者家庭多台电脑上完成Hexo博客的撰写和发布工作，这就涉及到Hexo多电脑的同步问题。</p></div>
+        <div class="note warning"><p>我们经常需要在公司或者家庭多台电脑上完成hexo博客的撰写和发布工作，这就涉及到hexo多电脑的同步问题。</p></div>
 <p>网上的方案基本上都是多分支方案。也即，在同一个仓库创建两个分支：</p>
 <ul>
-<li>Hexo分支 – 用来保存所有Hexo的源文件</li>
-<li>master分支 – 用来保存Hexo生成的博客文件</li>
+<li>hexo分支 – 用来保存所有hexo的源文件</li>
+<li>master分支 – 用来保存hexo生成的博客文件</li>
 </ul>
-<p>在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。<br>Hexo的deploy指向master分支部署pages，git的管理指向Hexo分支。</p>
-<p>但是这里有一个巨大的问题，就是多分支的方案一定是让完整的Hexo源文件暴露在公开的仓库了。这对一些Hexo博客采用的leancloud阅读次数管理、多说评论等服务的私有secret key也暴露在公开仓库分支了。如果对这些配置的_config.yml进行单独管理的话，又不能在另一台电脑直接git pull同步，非常的麻烦。</p>
+<p>在创建GitHub Pages或者Coding Pages时，以master分支为pages分支。hexo的deploy指向master分支部署pages，源文件指向hexo分支。</p>
+<p>但是这里有一个巨大的问题，就是多分支的方案让完整的Hexo源文件暴露在了公开的仓库。一些hexo博客采用了leancloud阅读次数管理、多说评论等服务，其私有secret key也暴露在公开仓库分支了。如果对这些配置的_config.yml进行单独管理的话，又不能在另一台电脑直接git pull同步，非常的麻烦。</p>
 <a id="more"></a>
 
-<p>所以Hexo最完美的多电脑同步方法是，创建两个仓库：</p>
-<p>Hexo私有仓库 – 用来保存所有Hexo的源文件<br>master公开仓库 – 用来保存Hexo生成的博客文件<br>下面来具体讲讲实现方法。</p>
-<h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>这里假设读者已经搭建好了Hexo的博客系统，实现了：</p>
+<p>所以hexo最完美的多电脑同步方法是，创建两个仓库：</p>
+<p>hexo私有仓库 – 用来保存所有hexo的源文件<br>master公开仓库 – 用来保存hexo生成的博客文件<br>下面来具体讲讲实现方法。</p>
+<h1 id="前提"><a href="#前提" class="headerlink" title="前提"></a>前提</h1><p>这里假设读者已经搭建好了hexo的博客系统，实现了：</p>
 <ol>
 <li>使用hexo d -g部署博客</li>
 <li>实现了发布hexo到github pages</li>
 <li>自定义了next等第三方主题</li>
 </ol>
 <h1 id="Let’s-go"><a href="#Let’s-go" class="headerlink" title="Let’s go!"></a>Let’s go!</h1><h2 id="创建私有仓库"><a href="#创建私有仓库" class="headerlink" title="创建私有仓库"></a>创建私有仓库</h2><p>注册一个Coding账号，然后创建一个私有项目，名称为hexo</p>
-<h2 id="建立本地git仓库"><a href="#建立本地git仓库" class="headerlink" title="建立本地git仓库"></a>建立本地git仓库</h2><p>进入你现有的Hexo文件夹，删除第三方主题的git配置，如对next主题</p>
+<h2 id="建立本地git仓库"><a href="#建立本地git仓库" class="headerlink" title="建立本地git仓库"></a>建立本地git仓库</h2><p>进入你现有的hexo文件夹，删除第三方主题的git配置，如对next主题</p>
 <pre>rm -fr ./themes/next/.git/</pre>
 
 <p>然后建立本地的git仓库</p>
@@ -403,20 +403,20 @@
 
 <h2 id="push到私有仓库"><a href="#push到私有仓库" class="headerlink" title="push到私有仓库"></a>push到私有仓库</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git remote add origin https://git.coding.net/&lt;yourname&gt;/hexo.git</span><br><span class="line">git add .</span><br><span class="line">git commit -m &quot;my first private hexo&quot;</span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
 
-<p>这样，就完成了本地Hexo源码的全备份</p>
-<p>#在另一台电脑进行Hexo写作<br>上面已经完成了Hexo的全备份，那么如果在另一台电脑进行Hexo编辑呢。<br>当然首先你也要完成node/npm/hexo/git等环境的搭建和配置。</p>
-<h2 id="Hexo拉取"><a href="#Hexo拉取" class="headerlink" title="Hexo拉取"></a>Hexo拉取</h2><pre>git clone https://git.coding.net/<yourname>/hexo.git</yourname></pre>
-<p>这样你就拥有了你的所有Hexo源文件</p>
-<h2 id="Hexo文章编写和发布"><a href="#Hexo文章编写和发布" class="headerlink" title="Hexo文章编写和发布"></a>Hexo文章编写和发布</h2><p>尽管拉取下来了，还需要建立一下Hexo的环境，这里需要格外注意的一点是：<br>千万不要用hexo init命令。原因是当前目录已经建立了git仓库环境, <code>hexo init</code>会覆盖到当前的git环境，重建一个新的，这样和我们的私有Hexo源码仓库脱离了联系。</p>
+<p>这样，就完成了本地hexo源码的全备份</p>
+<p>#在另一台电脑进行hexo写作<br>上面已经完成了hexo的全备份，那么如果在另一台电脑进行hexo编辑呢？<br>当然首先你也要完成node/npm/hexo/git等环境的搭建和配置。</p>
+<h2 id="hexo拉取"><a href="#hexo拉取" class="headerlink" title="hexo拉取"></a>hexo拉取</h2><pre>git clone https://git.coding.net/<yourname>/hexo.git</yourname></pre>
+<p>这样你就拥有了你的所有hexo源文件</p>
+<h2 id="hexo文章编写和发布"><a href="#hexo文章编写和发布" class="headerlink" title="hexo文章编写和发布"></a>hexo文章编写和发布</h2><p>尽管拉取下来了，还需要建立一下hexo的环境，这里需要格外注意的一点是：<br>千万不要用hexo init命令。原因是当前目录已经建立了git仓库环境, <code>hexo init</code>会覆盖到当前的git环境，重建一个新的，这样和我们的私有hexo源码仓库脱离了联系。</p>
 <p>正确的做法是：</p>
 <pre>npm install</pre>
-<p>因为<code>package.jso</code>里面已经保存了hexo的必备资源包信息，<code>npm install</code>后Hexo环境就建立起来了。</p>
+<p>因为<code>package.jso</code>里面已经保存了hexo的必备资源包信息，<code>npm install</code>后hexo环境就建立起来了。</p>
 <p>接下来就进行正常的编写和发布就好。<br>本地预览的命令还是：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure>
 
 <p>Hexo的发布命令是<code>hexo d</code>。</p>
-<p>最后执行<code>git status</code>把更改的新文件<code>git add</code>和<code>git commit</code>，最后<code>git push</code>到私有仓库，又会完成Hexo源码仓库的同步。</p>
-<h2 id="Hexo仓库更新"><a href="#Hexo仓库更新" class="headerlink" title="Hexo仓库更新"></a>Hexo仓库更新</h2><p>下次进行Hexo仓库拉取时执行：</p>
+<p>最后执行<code>git status</code>把更改的新文件<code>git add</code>和<code>git commit</code>，最后<code>git push</code>到私有仓库，又会完成hexo源码仓库的同步。</p>
+<h2 id="hexo仓库更新"><a href="#hexo仓库更新" class="headerlink" title="hexo仓库更新"></a>hexo仓库更新</h2><p>下次进行hexo仓库拉取时执行：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git fetch --all #将git上所有文件拉取到本地</span><br><span class="line">git reset --hard origin/master  #强制将本地内容指向刚刚同步git云端内容</span><br></pre></td></tr></table></figure>
 
 <p>至此，我们就实现了在多台电脑自由发布文章。</p>
@@ -588,7 +588,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Let’s-go"><span class="nav-number">2.</span> <span class="nav-text">Let’s go!</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建私有仓库"><span class="nav-number">2.1.</span> <span class="nav-text">创建私有仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建立本地git仓库"><span class="nav-number">2.2.</span> <span class="nav-text">建立本地git仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#push到私有仓库"><span class="nav-number">2.3.</span> <span class="nav-text">push到私有仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo拉取"><span class="nav-number">2.4.</span> <span class="nav-text">Hexo拉取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo文章编写和发布"><span class="nav-number">2.5.</span> <span class="nav-text">Hexo文章编写和发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo仓库更新"><span class="nav-number">2.6.</span> <span class="nav-text">Hexo仓库更新</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前提"><span class="nav-number">1.</span> <span class="nav-text">前提</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Let’s-go"><span class="nav-number">2.</span> <span class="nav-text">Let’s go!</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#创建私有仓库"><span class="nav-number">2.1.</span> <span class="nav-text">创建私有仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#建立本地git仓库"><span class="nav-number">2.2.</span> <span class="nav-text">建立本地git仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#push到私有仓库"><span class="nav-number">2.3.</span> <span class="nav-text">push到私有仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo拉取"><span class="nav-number">2.4.</span> <span class="nav-text">hexo拉取</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo文章编写和发布"><span class="nav-number">2.5.</span> <span class="nav-text">hexo文章编写和发布</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hexo仓库更新"><span class="nav-number">2.6.</span> <span class="nav-text">hexo仓库更新</span></a></li></ol></li></ol></div>
             
 
           </div>
